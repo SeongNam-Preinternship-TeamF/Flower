@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  # db:
+  #   image: postgres:12.0-alpine
+  #   # volumes:
+  #   #   - postgres_data_dev:/var/lib/postgresql/data/
+  #   environment:
+  #     POSTGRES_USER: "eg_user"
+  #     POSTGRES_PASSWORD: "eg_pw"
+  #     POSTGRES_DB: "eg_db"
+  #   ports:
+  #     - 5432:5432
+
+  backend:
+    build:
+      context: ./Backend # local repo의 Dockerfile의 위치
+      args:
+        DJANGO_ALLOWED_HOSTS: "*"
+        DJANGO_SECRET_KEY: "*"
+        DJANGO_CORS_ORIGIN_WHITELIST: "*"
+    # command: python manage.py runserver 0.0.0.0:8000
+    command: flask run --host=0.0.0.0 --port=5000
+    ports:
+      - 5001:5000
+    volumes:
+      - ./Backend/:/backend/
+    # expose:
+    #   - 5001
+    env_file:
+      - ./settings/.env.dev
+    environment:
+      FLASK_DEBUG: 1
+      FLASK_APP: ./pybo.py
+      FLASK_ENV: development
+      # FLASK_APP: ./app.py
+      # depends_on:
+      #   - db
+
+      # frontend:
+      #   build:
+      #     context: ./frontend
+      #   command: [ "yarn", "start" ]
+      #   ports:
+      #     - 80:3000
+      #   volumes:
+      #     - ./frontend/:/frontend
+      #     - ./frontend/node_modules/:/frontend/node_modules
+      #   environment:
+      #     - CI=true
+      #     - CHOKIDAR_USEPOLLING=true
+      #     - REACT_APP_BACKEND_URL=http://localhost:8000
+      #   tty: true
+
+      # volumes:
+      #   postgres_data_dev: null
