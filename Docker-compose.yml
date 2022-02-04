@@ -15,11 +15,11 @@ services:
   backend:
     build:
       context: ./Backend # local repo의 Dockerfile의 위치
-      args:
-        DJANGO_ALLOWED_HOSTS: "*"
-        DJANGO_SECRET_KEY: "*"
-        DJANGO_CORS_ORIGIN_WHITELIST: "*"
-    # command: python manage.py runserver 0.0.0.0:8000
+      # args:
+      #   DJANGO_ALLOWED_HOSTS: "*"
+      #   DJANGO_SECRET_KEY: "*"
+      #   DJANGO_CORS_ORIGIN_WHITELIST: "*"
+      # command: python manage.py runserver 0.0.0.0:8000
     command: flask run --host=0.0.0.0 --port=5000
     ports:
       - 5001:5000
