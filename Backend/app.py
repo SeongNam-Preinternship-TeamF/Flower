@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 import boto3
 import os
 
@@ -17,6 +17,10 @@ s3 = boto3.resource(
 def hello_pybo():
     print('반영')
     return 'Hello, Pybo!'
+
+# @app.route('/upload-file', methods=["POST"])
+# def uploadFile():
+#      print("here")
 
 
 if __name__ == '__main__':

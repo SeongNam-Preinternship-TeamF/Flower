@@ -49,8 +49,7 @@ services:
       #   environment:
       #     - CI=true
       #     - CHOKIDAR_USEPOLLING=true
-      #     - REACT_APP_BACKEND_URL=http://localhost:8000
+      #     - REACT_APP_BACKEND_URL=http://localhost:3000
       #   tty: true
-
       # volumes:
       #   postgres_data_dev: null
