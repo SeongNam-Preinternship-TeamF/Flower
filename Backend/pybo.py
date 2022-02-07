@@ -1,5 +1,16 @@
 from flask import Flask
+import boto3
+import os
+
 app = Flask(__name__)
+
+app.config['FLASKS3_BUCKET_NAME'] = 'team-flower'
+s3 = boto3.resource(
+    service_name=os.environ['s3_service_name'],
+    region_name=os.environ['s3_region_name'],
+    aws_access_key_id=os.environ['s3_aws_access_key_id'],
+    aws_secret_access_key=os.environ['s3_aws_secret_access_key']
+)
 
 
 @app.route('/')
