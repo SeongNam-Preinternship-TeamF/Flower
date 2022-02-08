@@ -39,11 +39,6 @@ def uploadFile():
     file.save(os.path.join(
         app.config['UPLOAD_FOLDER'], file.filename))
 
-    # outcome = s3.put_object(Body=file,
-    #                         Bucket=app.config['directory'],
-    #                         Key=file.filename,
-    #                         ContentType=request.mimetype)
-
     # s3 bucket에 이미지 파일 저장
     file_path = app.config['UPLOAD_FOLDER'] + "/" + file.filename
     s3.upload_file(
