@@ -67,4 +67,5 @@ pip-selfcheck.json
 /Frontend/yarn-error.log*
 
 /Frontend/package-lock.json
-/settings/dev/.env.templete.dev
+
+settings/dev/.env.dev
