@@ -40,3 +40,29 @@ pip-selfcheck.json
 
 # env
 /settings
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/Frontend/node_modules
+/Frontend/.pnp
+/Frontend/.pnp.js
+
+# testing
+/coverage
+
+# production
+/Frontend/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+/Frontend/npm-debug.log*
+/Frontend/yarn-debug.log*
+/Frontend/yarn-error.log*
+
+/Frontend/package-lock.json
