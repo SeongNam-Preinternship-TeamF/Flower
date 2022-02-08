@@ -4,6 +4,13 @@ import pymongo
 import boto3
 import os
 
+# model
+import tensorflow as tf
+from tensorflow import keras
+from keras.models import load_model
+from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
+import numpy as np
+
 app = Flask(__name__)
 
 app.config['FLASKS3_BUCKET_NAME'] = 'team-flower'
@@ -11,6 +18,35 @@ bucket_name = app.config['FLASKS3_BUCKET_NAME']
 app.config['UPLOAD_FOLDER'] = "/backend/Images"
 app.config['directory'] = "root_directory"
 rootFolder = app.config['directory']
+
+# model load
+model = tf.keras.models.load_model('./Backend/model/model.hdf5')
+label_dict = ['Daisy','Sunflower','Tulip', 'Dandelion','Rose']   
+
+
+# Q. mehtods = ['POST']
+@app.route('/predict',mehtods = ['GET','POST'])
+def model_predict():  
+    if request.method == 'POST':
+        # Get the image -> img_path = doc (?)
+        img = tf.keras.preprocssing.image.load_img(doc, target_size=(150,150,3))
+        x = img.img_to_array(img)
+        x = np.true_divide(x,255)
+        x = np.expand_dims(x, axis=0)
+        # x = preprocess_input(x, mode='caffe')
+        
+        # predict
+        model._make_predict_function() # predict() 호출 전 
+        preds = model.predict(x)
+
+        data["pred_proba"] = "{:.3f}".format(np.amax(preds))    # Max probability
+        data["pred_class"] = label_dict[preds[0]]               # 꽃 이름
+        
+        # json 형태로 반환
+        return flask.jsonify(data)
+    
+    return None
+
 
 s3 = boto3.client(
     service_name="s3",

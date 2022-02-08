@@ -25,6 +25,7 @@ const Main = (props) => {
     setImg(currentFile);
   };
 
+  
   const onSubmit = () => {
     const formData = new FormData();
     formData.append("file", img);
