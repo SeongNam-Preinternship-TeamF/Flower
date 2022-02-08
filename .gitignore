@@ -40,7 +40,7 @@ pip-selfcheck.json
 # End of https://www.toptal.com/developers/gitignore/api/venv,visualstudiocode
 
 # env
-/settings
+/settings/dev/.env.dev
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -67,5 +67,3 @@ pip-selfcheck.json
 /Frontend/yarn-error.log*
 
 /Frontend/package-lock.json
-
-/settings/dev/.env.dev
