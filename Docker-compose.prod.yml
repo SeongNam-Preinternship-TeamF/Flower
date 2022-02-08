@@ -16,11 +16,6 @@ services:
   backend:
     build:
       context: ./backend
-      # args:
-      #   DJANGO_ALLOWED_HOSTS: "*"
-      #   DJANGO_SECRET_KEY: "*"
-      #   DJANGO_CORS_ORIGIN_WHITELIST: "*"
-      # command: gunicorn backend.wsgi --bind 0.0.0.0:8000
     command: flask run --host=0.0.0.0 --port=5000
     ports:
       - 5001:5000
@@ -36,19 +31,18 @@ services:
       - ./settings/prod/.env.prod
     # depends_on:
     #   - db
-    # frontend:
-    #   build:
-    #     context: ./frontend
-    #     args:
-    #       API_URL: "*"
-    #   environment:
-    #     - REACT_APP_BACKEND_URL=http://localhost:8000
-    #   volumes:
-    #     - ./frontend/:/frontend
-    #     - build_folder:/frontend/build
-    #     - ./frontend/node_modules/:/frontend/node_modules
-    #   tty: true
-
+  frontend:
+    build:
+      context: ./frontend
+      # args:
+      #   API_URL: "*"
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:5000
+    volumes:
+      - ./frontend/:/frontend
+      - build_folder:/frontend/build
+      - ./frontend/node_modules/:/frontend/node_modules
+    tty: true
     # nginx 컨테이너(서버)
     # nginx:
     #   build: ./nginx
@@ -65,6 +59,6 @@ services:
     # 컨테이너 내려도 데이터 유지되도록 함
     # volumes:
     #   postgres_data: null
-    #   static_volume: null
-    #   media_volume: null
-    #   build_folder: null
+  static_volume: null
+  media_volume: null
+  build_folder: null
