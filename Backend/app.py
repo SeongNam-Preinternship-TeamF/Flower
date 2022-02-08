@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
+import pymongo
 import boto3
 import os
 
@@ -19,6 +20,9 @@ s3 = boto3.client(
     endpoint_url=os.getenv('endpoint_url')
 )
 
+myclient = pymongo.MongoClient("mongodb+srv://teamf:teamf123@flowerdb.37ico.mongodb.net/flowerdb?retryWrites=true&w=majority")
+mydb = myclient.flowerdb
+mycol = mydb.inform
 
 @app.route('/')
 def hello_pybo():
@@ -43,7 +47,18 @@ def uploadFile():
         app.config['directory'] + "/" + file.filename
     print("file_dir:", file_dir)
 
-    return file_dir
+    print("type:", type(file_dir))
+
+    file_db = {
+        "URL": file_dir
+    }
+    mycol.insert_one(file_db)
+
+    doc = mycol.find({"URL": file_dir})
+    print("type:", type(doc))
+
+
+    return doc
 
 
 if __name__ == '__main__':
