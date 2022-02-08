@@ -68,4 +68,4 @@ pip-selfcheck.json
 
 /Frontend/package-lock.json
 
-settings/dev/.env.dev
+/settings/dev/.env.dev
