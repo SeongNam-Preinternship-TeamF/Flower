@@ -31,23 +31,28 @@ def hello_pybo():
 @app.route('/upload', methods=["POST"])
 def uploadFile():
 
-    file = request.files['upload_file']
+    file = request.files['upload_files']
     # 한글 이름의 파일 입력시 validation이 안되는 문제가 존재
     file.filename = secure_filename(file.filename)
 
     # backend 서버에 파일 저장
     file.save(os.path.join(
         app.config['UPLOAD_FOLDER'], file.filename))
-    outcome = s3.put_object(Body=file,
-                            Bucket=app.config['directory'],
-                            Key=file.filename,
-                            ContentType=request.mimetype)
 
-    file_dir = os.getenv('endpoint_url') + "/" + \
-        app.config['directory'] + "/" + file.filename
-    print("file_dir:", file_dir)
+    # outcome = s3.put_object(Body=file,
+    #                         Bucket=app.config['directory'],
+    #                         Key=file.filename,
+    #                         ContentType=request.mimetype)
 
-    return file_dir
+    # s3 bucket에 이미지 파일 저장
+    object_name = file.name
+    file_path = app.config['UPLOAD_FOLDER'] + "/" + file.filename
+    print(file_path)
+    print("file.filename:", file.filename)
+    s3.upload_file(
+        file_path, rootFolder, file.filename)
+
+    return "image uploaded"
 
 
 if __name__ == '__main__':
