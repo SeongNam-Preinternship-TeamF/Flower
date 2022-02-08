@@ -1,0 +1,53 @@
+.margin{
+    width: 94rem;
+    height: 100vh;
+    margin: 0 auto;
+}
+.banner{
+    width: 94rem;
+    height: 30rem;
+    margin: 0 auto;
+    margin-top: 7rem;
+    border-radius: 2rem;
+    box-shadow: 3px 3px 4px #a4a4a4;
+    background-image: url(../../public/images/Flower.png);
+    background-size: cover;
+}
+.subtitle{
+    width: 18rem;
+    margin: 0 auto;
+    font-weight: 700;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    font-size: 20px;
+}
+.selectPic{
+    width:8rem;
+    padding: 8px 36px;
+    background-color: #dd6d22;
+    border: none;
+    border-radius: 6vh;
+    box-shadow: 2px 2px 4px #a4a4a4 ;
+
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    text-shadow: 2px 2px 4px #a4a4a4 25%;
+
+    margin-left: 39.5%;
+}
+.result{
+    width:8rem;
+    padding: 8px 36px;
+    background-color: #dd6d22;
+    border: none;
+    border-radius: 6vh;
+    box-shadow: 2px 2px 4px #a4a4a4 ;
+
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    text-shadow: 2px 2px 4px #a4a4a4 25%;
+
+    margin-left: 2rem;
+}

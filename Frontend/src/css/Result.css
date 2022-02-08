@@ -1,0 +1,17 @@
+.margin{
+    width: 100rem;
+    height: 100vh;
+}
+.title{
+    letter-spacing: 2rem;
+    margin: 0 auto;
+}
+.letter{
+    color: #E37B7B;
+}
+.flowerResult{
+    margin: 0 auto;
+    border-radius: 5rem;
+    width: 50rem;
+    height: 20rem;
+}
