@@ -54,12 +54,11 @@ def uploadFile():
     }
     mycol.insert_one(file_db)
 
-    doc = mycol.find({"URL": file_dir})
-    print("type:", type(doc))
+    doc = mycol.find_one({"URL": file_dir})
+    docc = str(doc.values())
+    print("type:", type(docc))
 
-
-    return doc
-
+    return docc
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
