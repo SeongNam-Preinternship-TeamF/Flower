@@ -27,3 +27,4 @@
 ## env 파일 관리
 
 - settings 디렉토리에 dev, prod 버전의 env 파일이 존재한다
+  asdf
