@@ -20,7 +20,7 @@ const Result = () => {
         src="https://www.gardendesign.com/pictures/images/675x529Max/site_3/helianthus-yellow-flower-pixabay_11863.jpg"
       />
       <div className="w-full flex justify-center font-bold mt-4">
-        결과페이지 분갈이 꽃말, 꽃 이름 일조량 물주기주기
+        결과페이지-- 분갈이 꽃말, 꽃 이름 일조량 물주기
       </div>
     </div>
   );
