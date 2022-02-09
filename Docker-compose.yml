@@ -51,5 +51,54 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - REACT_APP_BACKEND_URL=http://localhost:5000
     tty: true
-  # volumes:
-  #   postgres_data_dev: null
+
+  elasticsearch:
+    build:
+      context: ELK/elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./ELK/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+      - elasticsearch:/usr/share/elasticsearch/data:z
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: changeme
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
+      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
+
+  logstash:
+    build:
+      context: ELK/logstash/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./ELK/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,z
+      - ./ELK/logstash/pipeline:/usr/share/logstash/pipeline:ro,z
+    ports:
+      - "5044:5044"
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    build:
+      context: ELK/kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./ELK/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,z
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+volumes:
+  elasticsearch: # postgres_data_dev: null
