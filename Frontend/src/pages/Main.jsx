@@ -8,7 +8,7 @@ const Main = (props) => {
   const [img, setImg] = useState();
   const [fileUrl, setFileUrl] = useState("");
   const [filename, setFilename] = useState("");
-  const [taskID, setTaskID] = useState(1);
+  //const [taskID, setTaskID] = useState(1);
 
   const navigate = useNavigate();
 
@@ -51,7 +51,7 @@ const Main = (props) => {
       {fileUrl === "" ? (
         <p></p>
       ) : (
-        <img className="w-32 mx-auto mb-4" src={fileUrl} alt="mainImage" />
+        <img className="w-32 mx-auto mb-4" src={fileUrl} alt="previewImage" />
       )}
       <div className="w-full flex justify-center">
         <div className="selectPic" onClick={handleUploadButtonClick}>
