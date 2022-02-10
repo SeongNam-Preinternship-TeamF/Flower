@@ -20,7 +20,7 @@ s3 = boto3.client(
     endpoint_url=os.getenv('endpoint_url')
 )
 
-myclient = pymongo.MongoClient("mongodb+srv://teamf:teamf123@flowerdb.37ico.mongodb.net/flowerdb?retryWrites=true&w=majority")
+myclient = pymongo.MongoClient("mongodb+srv://teamf:<password>@flowerdb.37ico.mongodb.net/flowerdb?retryWrites=true&w=majority")
 mydb = myclient.flowerdb
 mycol = mydb.inform
 
