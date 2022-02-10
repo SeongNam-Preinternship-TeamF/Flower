@@ -6,6 +6,8 @@ import os
 
 app = Flask(__name__)
 
+mongo_info = os.environ['mondb_URI']
+
 app.config['FLASKS3_BUCKET_NAME'] = 'team-flower'
 app.config['UPLOAD_FOLDER'] = "/backend/Images"
 app.config['directory'] = "root_directory"
@@ -20,14 +22,12 @@ s3 = boto3.client(
     endpoint_url=os.getenv('endpoint_url')
 )
 
-<<<<<<< HEAD
-# API sample
-
-=======
-myclient = pymongo.MongoClient("mongodb+srv://teamf:<password>@flowerdb.37ico.mongodb.net/flowerdb?retryWrites=true&w=majority")
+myclient = pymongo.MongoClient(
+    mongo_info
+)
 mydb = myclient.flowerdb
 mycol = mydb.inform
->>>>>>> mongodb-minseok
+
 
 @app.route('/')
 def hello_pybo():
@@ -45,36 +45,27 @@ def uploadFile():
     # backend 서버에 파일 저장
     file.save(os.path.join(
         app.config['UPLOAD_FOLDER'], file.filename))
-<<<<<<< HEAD
 
     # s3 bucket에 이미지 파일 저장
     file_path = app.config['UPLOAD_FOLDER'] + "/" + file.filename
     s3.upload_file(
         file_path, rootFolder, file.filename)
 
-    return "image uploaded"
-=======
-    outcome = s3.put_object(Body=file,
-                            Bucket=app.config['directory'],
-                            Key=file.filename,
-                            ContentType=request.mimetype)
-    file_dir = os.getenv('endpoint_url') + "/" + \
-        app.config['directory'] + "/" + file.filename
-    print("file_dir:", file_dir)
-
-    print("type:", type(file_dir))
->>>>>>> mongodb-minseok
-
     file_db = {
-        "URL": file_dir
+        "URL": file_path
     }
+
     mycol.insert_one(file_db)
+    print("type[file_path]:", type(file_path))
 
-    doc = mycol.find_one({"URL": file_dir})
-    docc = str(doc.values())
-    print("type:", type(docc))
+    # return docc
 
-    return docc
+    print("file_db:", file_db)
+    print("type(file_db):", type(file_db))
+    print("file_path:", file_path)
+
+    return file_db
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
