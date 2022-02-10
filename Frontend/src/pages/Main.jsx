@@ -14,9 +14,7 @@ const Main = (props) => {
 
   const buttonRef = React.useRef();
 
-  const handleUploadButtonClick = () => {
-    buttonRef.current?.click();
-  };
+  const handleUploadButtonClick = () => buttonRef.current?.click();
 
   const uploadImg = (e) => {
     e.preventDefault();

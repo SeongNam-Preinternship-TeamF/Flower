@@ -1,3 +1,4 @@
+import React from 'react';
 import { BallTriangle, TailSpin } from 'react-loader-spinner';
 import styled from "styled-components";
 

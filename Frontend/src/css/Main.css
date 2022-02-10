@@ -1,36 +1,36 @@
-.banner{
-    height: 30rem;
-    margin-top: 7rem;
-    border-radius: 2rem;
-    box-shadow: 3px 3px 4px #a4a4a4;
-    background-image: url(../../public/images/Flower.png);
-    background-size: cover;
+.banner {
+  height: 30rem;
+  margin-top: 7rem;
+  border-radius: 2rem;
+  box-shadow: 3px 3px 4px #a4a4a4;
+  background-image: url(../images/Flower.png);
+  background-size: cover;
 }
-.selectPic{
-    width:8rem;
-    padding: 8px 36px;
-    background-color: #dd6d22;
-    border: none;
-    border-radius: 6vh;
-    box-shadow: 2px 2px 4px #a4a4a4 ;
-    text-align: center;
-    color: #ffffff;
-    font-size: 11px;
-    font-weight: 600;
-    text-shadow: 2px 2px 4px #a4a4a4 25%;
+.selectPic {
+  width: 8rem;
+  padding: 8px 36px;
+  background-color: #dd6d22;
+  border: none;
+  border-radius: 6vh;
+  box-shadow: 2px 2px 4px #a4a4a4;
+  text-align: center;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  text-shadow: 2px 2px 4px #a4a4a4 25%;
 }
-.result{
-    width:8rem;
-    padding: 8px 36px;
-    background-color: #dd6d22;
-    border: none;
-    border-radius: 6vh;
-    box-shadow: 2px 2px 4px #a4a4a4 ;
+.result {
+  width: 8rem;
+  padding: 8px 36px;
+  background-color: #dd6d22;
+  border: none;
+  border-radius: 6vh;
+  box-shadow: 2px 2px 4px #a4a4a4;
 
-    color: #ffffff;
-    font-size: 11px;
-    font-weight: 600;
-    text-shadow: 2px 2px 4px #a4a4a4 25%;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  text-shadow: 2px 2px 4px #a4a4a4 25%;
 
-    margin-left: 2rem;
+  margin-left: 2rem;
 }
