@@ -25,20 +25,15 @@ rootFolder = app.config['directory']
 # model = tf.keras.models.load_model('./Backend/model/model.hdf5')
 label_dict = ['Daisy', 'Sunflower', 'Tulip', 'Dandelion', 'Rose']
 
-# 이미지 경로 -> dockerserver에 이미지 저장 + s3에도 저장 /
-#
+myclient = pymongo.MongoClient(
+    mongo_info
+)
+mydb = myclient.flowerdb
+myinform = mydb.inform
+myurl = mydb.photo_url
 
-
-# @app.route('/predict', mehtods=['GET', 'POST'])
-# def model_predict():
-#     if request.method == 'POST':
-#         # Get the image
-#         img = tf.keras.preprocssing.image.load_img(
-#             file_path, target_size=(150, 150, 3))
-#         x = img.img_to_array(img)
-#         x = np.true_divide(x, 255)
-#         x = np.expand_dims(x, axis=0)
-#         # x = preprocess_input(x, mode='caffe')
+@app.route('/')
+def hello_pybo():
 
 #         # predict
 #         model._make_predict_function()  # predict() 호출 전
@@ -68,6 +63,8 @@ label_dict = ['Daisy', 'Sunflower', 'Tulip', 'Dandelion', 'Rose']
 # mydb = myclient.flowerdb
 # mycol = mydb.inform
 
+    myurl.insert_one(file_db)
+    print("type[file_path]:", type(file_path))
 
 # @app.route('/')
 # def hello_pybo():
