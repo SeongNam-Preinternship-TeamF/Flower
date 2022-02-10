@@ -27,8 +27,8 @@ myclient = pymongo.MongoClient(
     mongo_info
 )
 mydb = myclient.flowerdb
-mycol = mydb.inform
-
+myinform = mydb.inform
+myurl = mydb.photo_url
 
 @app.route('/')
 def hello_pybo():
@@ -57,7 +57,7 @@ def uploadFile():
     }
     # https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/IMG_6225.png
 
-    mycol.insert_one(file_db)
+    myurl.insert_one(file_db)
     print("type[file_path]:", type(file_path))
 
     # return docc
