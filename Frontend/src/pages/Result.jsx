@@ -1,7 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../css/Result.css";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
 
 const Result = () => {
   return (
@@ -15,9 +13,10 @@ const Result = () => {
         걷자
       </p>
       <img
-        className="w-200 flex justify-center mx-auto mt-4 rounded-4xl"
+        className="w-200 flex justify-center mx-auto mt-4"
+        style={{ borderRadius: "4rem" }}
         alt="flower"
-        src="https://www.gardendesign.com/pictures/images/675x529Max/site_3/helianthus-yellow-flower-pixabay_11863.jpg"
+        src="url"
       />
       <div className="flex justify-center mt-4 font-bold text-2xl">꽃 이름</div>
       <div className="mx-16 h-24 w-11/12 shadow-lg rounded-2xl justify-center mt-4 font-bold text-center">
