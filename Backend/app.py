@@ -1,9 +1,13 @@
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
+import pymongo
 import boto3
 import os
+import json
 
 app = Flask(__name__)
+
+mongo_info = os.environ['mondb_URI']
 
 app.config['FLASKS3_BUCKET_NAME'] = 'team-flower'
 app.config['UPLOAD_FOLDER'] = "/backend/Images"
@@ -19,7 +23,11 @@ s3 = boto3.client(
     endpoint_url=os.getenv('endpoint_url')
 )
 
-# API sample
+myclient = pymongo.MongoClient(
+    mongo_info
+)
+mydb = myclient.flowerdb
+mycol = mydb.inform
 
 
 @app.route('/')
@@ -44,7 +52,26 @@ def uploadFile():
     s3.upload_file(
         file_path, rootFolder, file.filename)
 
-    return "image uploaded"
+    file_db = {
+        "URL": os.getenv('endpoint_url') + "/" + rootFolder + "/" + file.filename
+    }
+    # https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/IMG_6225.png
+
+    mycol.insert_one(file_db)
+    print("type[file_path]:", type(file_path))
+
+    # return docc
+
+    print("file_db:", file_db)
+    print("type(file_db):", type(file_db))
+    print("file_path:", file_path)
+
+    return_json = json.dumps(file_path)
+
+    print("return_json:", return_json)
+    print("return_json:", type(return_json))
+
+    return file_db["URL"]
 
 
 if __name__ == '__main__':
