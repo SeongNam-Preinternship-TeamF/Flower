@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 import pymongo
 import boto3
 import os
+import json
 
 app = Flask(__name__)
 
@@ -52,8 +53,9 @@ def uploadFile():
         file_path, rootFolder, file.filename)
 
     file_db = {
-        "URL": file_path
+        "URL": os.getenv('endpoint_url') + "/" + rootFolder + "/" + file.filename
     }
+    # https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/IMG_6225.png
 
     mycol.insert_one(file_db)
     print("type[file_path]:", type(file_path))
@@ -64,7 +66,12 @@ def uploadFile():
     print("type(file_db):", type(file_db))
     print("file_path:", file_path)
 
-    return file_db
+    return_json = json.dumps(file_path)
+
+    print("return_json:", return_json)
+    print("return_json:", type(return_json))
+
+    return file_db["URL"]
 
 
 if __name__ == '__main__':
