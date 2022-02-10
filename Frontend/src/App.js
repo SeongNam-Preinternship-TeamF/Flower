@@ -1,10 +1,10 @@
-import React from 'react';
-import './App.css';
-import { BrowserRouter, Route ,Routes} from 'react-router-dom';
-import Main from './pages/Main';
-import Result from './pages/Result';
-import Header from './components/Header';
-
+import React from "react";
+import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Main from "./pages/Main";
+import Result from "./pages/Result";
+import Search from "./pages/Search";
+import Header from "./components/Header";
 
 const App = () => {
   return (
@@ -12,8 +12,9 @@ const App = () => {
       <BrowserRouter>
         <Header />
         <Routes>
-          <Route exact path="/" element={<Main/>}/>
-          <Route exact path="/result" element={<Result/>}/>
+          <Route exact path="/" element={<Main />} />
+          <Route path="/result" element={<Result />} />
+          <Route path="/search" element={<Search />} />
         </Routes>
       </BrowserRouter>
     </div>

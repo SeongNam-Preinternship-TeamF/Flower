@@ -13,7 +13,7 @@ const Header = () => {
     >
       <b>
         <a className="navbar-brand" href="/" style={{ color: "#dd6d22" }}>
-          F-lower
+          꽃길
         </a>
       </b>
       <button
@@ -32,15 +32,8 @@ const Header = () => {
           <a className="nav-item nav-link active" href="/">
             홈 <span className="sr-only">(current)</span>
           </a>
-          <a className="nav-item nav-link" href="#">
+          <a className="nav-item nav-link" href="/search">
             꽃 찾기
-          </a>
-          <a className="nav-item nav-link" href="#">
-            내 꽃은
-          </a>
-          <a className="nav-item nav-link disabled" href="#">
-            캘린더
-            {/* saf */}
           </a>
         </div>
       </div>

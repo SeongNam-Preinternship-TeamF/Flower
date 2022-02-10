@@ -29,7 +29,7 @@ const Main = (props) => {
     setFilename(img.name);
     navigate("/result");
     axios
-      .post("url ", formData)
+      .post("backend", formData)
       .then((response) => {
         console.log(response.data);
         props.onSubmit(response.data.url, response.data.result);
