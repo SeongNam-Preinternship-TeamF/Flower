@@ -3,17 +3,51 @@ from werkzeug.utils import secure_filename
 import pymongo
 import boto3
 import os
-import json
+
+# # model
+import tensorflow as tf
+from tensorflow import keras
+from keras.models import load_model
+#from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
+import numpy as np
 
 app = Flask(__name__)
-
-mongo_info = os.environ['mondb_URI']
 
 app.config['FLASKS3_BUCKET_NAME'] = 'team-flower'
 app.config['UPLOAD_FOLDER'] = "/backend/Images"
 app.config['directory'] = "root_directory"
 bucket_name = app.config['FLASKS3_BUCKET_NAME']
 rootFolder = app.config['directory']
+
+# model load
+model = tf.keras.models.load_model('./Backend/model/model.hdf5')
+label_dict = ['Daisy','Sunflower','Tulip', 'Dandelion','Rose']   
+
+# 이미지 경로 -> dockerserver에 이미지 저장 + s3에도 저장 / 
+# 
+@app.route('/predict',mehtods = ['GET','POST'])
+def model_predict():  
+    if request.method == 'POST':
+        # Get the image 
+        img = tf.keras.preprocssing.image.load_img(file_path, target_size=(150,150,3))
+        x = img.img_to_array(img)
+        x = np.true_divide(x,255)
+        x = np.expand_dims(x, axis=0)
+        # x = preprocess_input(x, mode='caffe')
+        
+        # predict
+        model._make_predict_function() # predict() 호출 전 
+        preds = model.predict(x)
+
+        #data[] = []
+        data["pred_proba"] = "{:.3f}".format(np.amax(preds))    # Max probability
+        data["pred_class"] = label_dict[preds[0]]               # 꽃 이름
+        
+        # json 형태로 반환
+        return flask.jsonify(data)
+    
+    return None
+
 
 s3 = boto3.client(
     service_name="s3",
@@ -23,17 +57,14 @@ s3 = boto3.client(
     endpoint_url=os.getenv('endpoint_url')
 )
 
-myclient = pymongo.MongoClient(
-    mongo_info
-)
+myclient = pymongo.MongoClient("mongodb+srv://teamf:teamf123@flowerdb.37ico.mongodb.net/flowerdb?retryWrites=true&w=majority")
 mydb = myclient.flowerdb
 mycol = mydb.inform
-
 
 @app.route('/')
 def hello_pybo():
 
-    return 'Hello, Pybo!'
+    return 'Hello, Pybo!!'
 
 
 @app.route('/upload', methods=["POST"])
@@ -52,26 +83,7 @@ def uploadFile():
     s3.upload_file(
         file_path, rootFolder, file.filename)
 
-    file_db = {
-        "URL": os.getenv('endpoint_url') + "/" + rootFolder + "/" + file.filename
-    }
-    # https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/IMG_6225.png
-
-    mycol.insert_one(file_db)
-    print("type[file_path]:", type(file_path))
-
-    # return docc
-
-    print("file_db:", file_db)
-    print("type(file_db):", type(file_db))
-    print("file_path:", file_path)
-
-    return_json = json.dumps(file_path)
-
-    print("return_json:", return_json)
-    print("return_json:", type(return_json))
-
-    return file_db["URL"]
+    return "image uploaded"
 
 
 if __name__ == '__main__':
