@@ -33,11 +33,33 @@ mydb = myclient.flowerdb
 myinform = mydb.inform
 myurl = mydb.photo_url
 
+doc = myinform.find({})
+
+
+def insertData():
+    es = Elasticsearch('elasticsearch')
+    index="inform"
+    for i in doc:
+        es.index(index="inform", doc_type="_doc", body=i)
+
+
 
 @app.route('/')
-def hello_pybo():
+# def hello_pybo():
+    
+def searchAPI():
+    es = Elasticsearch('http://localhost:9200')
+    
+    index = "inform"
+    body = {
+        "query":{
+            "match_all":{}
+        }
+    }
+    res = es.search(index=index, body=body)
+    return res
 
-    return 'Hello, Pybo!'
+    # return 'Hello, Pybo!'
 
 
 @app.route('/upload', methods=["POST"])
