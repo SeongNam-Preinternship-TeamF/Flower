@@ -2,8 +2,17 @@ from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import boto3
 import os
+from elasticsearch import Elasticsearch
 
 app = Flask(__name__)
+
+es_client = Elasticsearch(
+    hosts=[
+        {
+            'host': "elasticsearch", 'port': 9200
+        }
+    ]
+)
 
 app.config['FLASKS3_BUCKET_NAME'] = 'team-flower'
 app.config['UPLOAD_FOLDER'] = "/backend/Images"
