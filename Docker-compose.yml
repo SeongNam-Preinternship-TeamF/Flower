@@ -21,7 +21,7 @@ services:
       discovery.type: single-node
 
   backend:
-    depends_on :
+    depends_on:
       - elasticsearch
     build:
       context: ./Backend # local repo의 Dockerfile의 위치
@@ -43,8 +43,6 @@ services:
       FLASK_DEBUG: 1
       FLASK_APP: ./app.py
       FLASK_ENV: development
-    depends_on:
-      - elasticsearch
 
   frontend:
     build:
