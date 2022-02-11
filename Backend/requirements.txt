@@ -9,7 +9,8 @@ Jinja2==3.0.3
 jmespath==0.10.0
 keras==2.8.0
 MarkupSafe==2.0.1
-
+pillow==9.0.1
+Image==1.5.33
 numpy==1.21.5
 pymongo==4.0.1
 python-dateutil==2.8.2
