@@ -54,7 +54,7 @@ def uploadFile():
     file_path = app.config['UPLOAD_FOLDER'] + "/" + file.filename
     s3.upload_file(
         file_path, rootFolder, file.filename)
-    }
+    
 
     myurl.insert_one(file_db)
     print("type[file_path]:", type(file_path))
