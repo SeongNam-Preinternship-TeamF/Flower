@@ -8,6 +8,10 @@ from elasticsearch import Elasticsearch, helpers
 from flask_cors import CORS, cross_origin
 from bson.json_util import dumps, loads
 
+
+exec(open("setting_bulk.py").read())
+
+
 app = Flask(__name__)
 CORS(app)
 
@@ -37,50 +41,34 @@ myurl = mydb.photo_url
 doc = myinform.find({})
 
 
-es = Elasticsearch('http://localhost:9200')
-
-# 인덱스 생성
-es.indices.create(
-    index='dictionary',
-    body={
-        "settings": {
-            "index": {
-                "analysis": {
-                    "analyzer": {
-                        "my_analyzer": {
-                            "type": "custom",
-                            "tokenizer": "nori_tokenizer"
-                        }
-                    }
-                }
-            }
-        },
-        "mappings": {
-            "dictionary_datas": {
-                "properties": {
-                    "_id": {
-                        "type": "long"
-                    },
-                    "name": {
-                        "type": "text",
-                        "analyzer": "my_analyzer"
-                    },
-                    "flower meaning": {
-                        "type": "text",
-                        "analyzer": "my_analyzer"
-                    },
-
-                }
-            }
-        }
-    }
-)
 
 
 @app.route('/')
-def searchAPI():
+def hello_pybo():
 
-    return
+    return 'Hello, Pybo!'
+
+@app.route('/search', methods=["GET"])
+def searchAPI():
+    es = Elasticsearch('http://localhost:9200')
+    search_word = request.form['search']
+    # if not search_word:
+    #     return (status=status.HTTP_400_BAD_REQUEST, data={'message': 'search word param is missing'})
+    #에러 메세지 출력부 인데 문법이 Django꺼라 일단 주석 처리했음
+    docs = es.search(index='dictionary',
+                    doc_type='dictionary_datas',
+                    body={
+                        "query": {
+                            "multi_match": {
+                                "query": search_word,
+                                    "fields": ["name", "flower_meaning"]
+                                 }
+                             }
+                         })
+    data_list = docs['hits']
+    return data_list
+
+
 
 
 @app.route('/upload', methods=["POST"])
