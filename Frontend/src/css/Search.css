@@ -1,0 +1,10 @@
+.background {
+  height: 58rem;
+  background-image: url(../images/flower_main.png);
+  background-size: cover;
+  opacity: 0.5;
+}
+.searchbar {
+  padding-top: 28rem;
+  opacity: 1;
+}
