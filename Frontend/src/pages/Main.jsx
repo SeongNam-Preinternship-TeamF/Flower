@@ -27,17 +27,18 @@ const Main = (props) => {
 
   const onSubmit = () => {
     const formData = new FormData();
-    formData.append("file", img);
+    formData.append("upload_files", img);
     setFilename(img.name);
     navigate("/result");
     axios
-      .post("backend", formData)
+      .post("http://localhost:5001/upload", formData)
       .then((response) => {
-        console.log(response.data);
+        console.log(response);
         props.onSubmit(response.data.url, response.data.result);
         alert("이미지 로딩 완료");
       })
       .catch((error) => {
+        console.log(formData);
         alert("이미지 로딩 실패");
       });
   };
