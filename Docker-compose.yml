@@ -12,6 +12,26 @@ services:
   #   ports:
   #     - 5432:5432
 
+
+  # elasticsearch:
+  #   build:
+  #     context: ELK/elasticsearch/
+  #     args:
+  #       ELK_VERSION: 7.17.0
+  #   volumes:
+  #     - ./ELK/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+  #     - elasticsearch:/usr/share/elasticsearch/data:z
+  #   ports:
+  #     - "9200:9200"
+  #     - "9300:9300"
+  #   environment:
+  #     ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+  #     ELASTIC_PASSWORD: changeme
+  #     # Use single node discovery in order to disable production mode and avoid bootstrap checks.
+  #     # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+  #     discovery.type: single-node
+
+
   backend:
     build:
       context: ./Backend # local repo의 Dockerfile의 위치
@@ -35,7 +55,7 @@ services:
       FLASK_ENV: development
       # FLASK_APP: ./app.py
       # depends_on:
-      #   - db
+      #   - elasticsearch
 
   frontend:
     build:

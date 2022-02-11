@@ -3,16 +3,10 @@ from werkzeug.utils import secure_filename
 import boto3
 import os
 from elasticsearch import Elasticsearch
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
-
-es_client = Elasticsearch(
-    hosts=[
-        {
-            'host': "elasticsearch", 'port': 9200
-        }
-    ]
-)
+CORS(app)
 
 app.config['FLASKS3_BUCKET_NAME'] = 'team-flower'
 app.config['UPLOAD_FOLDER'] = "/backend/Images"
@@ -52,11 +46,12 @@ def uploadFile():
     file_path = app.config['UPLOAD_FOLDER'] + "/" + file.filename
     s3.upload_file(
         file_path, rootFolder, file.filename)
-
+    print('asdfaf')
     return "image uploaded"
 
 
 if __name__ == '__main__':
+
     app.run(host='0.0.0.0', port=5000)
 
 # 1 이미지 받아서 데이터베이스에 저장
