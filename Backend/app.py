@@ -4,8 +4,11 @@ import pymongo
 import boto3
 import os
 import json
+from elasticsearch import Elasticsearch
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app)
 
 mongo_info = os.environ['mondb_URI']
 
@@ -51,11 +54,7 @@ def uploadFile():
     file_path = app.config['UPLOAD_FOLDER'] + "/" + file.filename
     s3.upload_file(
         file_path, rootFolder, file.filename)
-
-    file_db = {
-        "URL": os.getenv('endpoint_url') + "/" + rootFolder + "/" + file.filename
     }
-    # https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/IMG_6225.png
 
     myurl.insert_one(file_db)
     print("type[file_path]:", type(file_path))
@@ -75,6 +74,7 @@ def uploadFile():
 
 
 if __name__ == '__main__':
+
     app.run(host='0.0.0.0', port=5000)
 
 # 1 이미지 받아서 데이터베이스에 저장
