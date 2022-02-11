@@ -1,36 +1,24 @@
 version: "3"
 
 services:
-  # db:
-  #   image: postgres:12.0-alpine
-  #   # volumes:
-  #   #   - postgres_data_dev:/var/lib/postgresql/data/
-  #   environment:
-  #     POSTGRES_USER: "eg_user"
-  #     POSTGRES_PASSWORD: "eg_pw"
-  #     POSTGRES_DB: "eg_db"
-  #   ports:
-  #     - 5432:5432
 
-
-  # elasticsearch:
-  #   build:
-  #     context: ELK/elasticsearch/
-  #     args:
-  #       ELK_VERSION: 7.17.0
-  #   volumes:
-  #     - ./ELK/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
-  #     - elasticsearch:/usr/share/elasticsearch/data:z
-  #   ports:
-  #     - "9200:9200"
-  #     - "9300:9300"
-  #   environment:
-  #     ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-  #     ELASTIC_PASSWORD: changeme
-  #     # Use single node discovery in order to disable production mode and avoid bootstrap checks.
-  #     # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
-  #     discovery.type: single-node
-
+  elasticsearch:
+    build:
+      context: ELK/elasticsearch/
+      args:
+        ELK_VERSION: 7.17.0
+    volumes:
+      - ./ELK/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+      - elasticsearch:/usr/share/elasticsearch/data:z
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: changeme
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
+      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
 
   backend:
     depends_on :
@@ -55,9 +43,8 @@ services:
       FLASK_DEBUG: 1
       FLASK_APP: ./app.py
       FLASK_ENV: development
-      # FLASK_APP: ./app.py
-      # depends_on:
-      #   - elasticsearch
+    depends_on:
+      - elasticsearch
 
   frontend:
     build:
@@ -74,23 +61,5 @@ services:
       - REACT_APP_BACKEND_URL=http://localhost:5000
     tty: true
 
-  elasticsearch:
-    build:
-      context: ELK/elasticsearch/
-      args:
-        ELK_VERSION: 7.17.0
-    volumes:
-      - ./ELK/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
-      - elasticsearch:/usr/share/elasticsearch/data:z
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-      ELASTIC_PASSWORD: changeme
-      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
-      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
-      discovery.type: single-node
-
 volumes:
-  elasticsearch: # postgres_data_dev: null
+  elasticsearch:

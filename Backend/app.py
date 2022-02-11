@@ -33,6 +33,7 @@ mydb = myclient.flowerdb
 myinform = mydb.inform
 myurl = mydb.photo_url
 
+
 @app.route('/')
 def hello_pybo():
 
@@ -54,23 +55,19 @@ def uploadFile():
     file_path = app.config['UPLOAD_FOLDER'] + "/" + file.filename
     s3.upload_file(
         file_path, rootFolder, file.filename)
-    
+
+    file_dir = os.getenv('endpoint_url') + "/" + \
+        app.config['directory'] + "/" + file.filename
+
+    file_db = {
+        "URL": file_dir
+    }
 
     myurl.insert_one(file_db)
-    print("type[file_path]:", type(file_path))
-
-    # return docc
-
-    print("file_db:", file_db)
-    print("type(file_db):", type(file_db))
-    print("file_path:", file_path)
 
     return_json = json.dumps(file_path)
 
-    print("return_json:", return_json)
-    print("return_json:", type(return_json))
-
-    return file_db["URL"]
+    return return_json
 
 
 if __name__ == '__main__':
