@@ -4,8 +4,9 @@ import pymongo
 import boto3
 import os
 import json
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, helpers
 from flask_cors import CORS, cross_origin
+from bson.json_util import dumps, loads
 
 app = Flask(__name__)
 CORS(app)
@@ -36,33 +37,54 @@ myurl = mydb.photo_url
 doc = myinform.find({})
 
 
-def insertData():
-    es = Elasticsearch('elasticsearch')
-    index="inform"
-    for i in doc:
-        es.index(index="inform", doc_type="_doc", body=i)
+es = Elasticsearch('http://localhost:9200')
 
+# 인덱스 생성
+es.indices.create(
+    index='dictionary',
+    body={
+        "settings": {
+            "index": {
+                "analysis": {
+                    "analyzer": {
+                        "my_analyzer": {
+                            "type": "custom",
+                            "tokenizer": "nori_tokenizer"
+                        }
+                    }
+                }
+            }
+        },
+        "mappings": {
+            "dictionary_datas": {
+                "properties": {
+                    "_id": {
+                        "type": "long"
+                    },
+                    "name": {
+                        "type": "text",
+                        "analyzer": "my_analyzer"
+                    },
+                    "flower meaning": {
+                        "type": "text",
+                        "analyzer": "my_analyzer"
+                    },
+
+                }
+            }
+        }
+    }
+)
 
 
 @app.route('/')
-# def hello_pybo():
-    
 def searchAPI():
-    es = Elasticsearch('http://localhost:9200')
-    
-    index = "inform"
-    body = {
-        "query":{
-            "match_all":{}
-        }
-    }
-    res = es.search(index=index, body=body)
-    return res
 
-    # return 'Hello, Pybo!'
+    return
 
 
 @app.route('/upload', methods=["POST"])
+# @cross_origin(origin='*')
 def uploadFile():
 
     file = request.files['upload_files']
