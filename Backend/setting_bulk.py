@@ -5,6 +5,9 @@ es = Elasticsearch('http://localhost:9200')
 
 # 인덱스 생성
 
+if es.indices.exists(index='dictionary'):
+    es.indices.delete(index='dictionary')
+    print('ping')
 
 es.indices.create(
     index='dictionary',
@@ -37,7 +40,7 @@ es.indices.create(
                     },
                     "caution": {
                         "type": "text"
-                    },
+                    }
 
                 }
             }
