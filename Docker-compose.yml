@@ -70,35 +70,5 @@ services:
       # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
 
-  logstash:
-    build:
-      context: ELK/logstash/
-      args:
-        ELK_VERSION: 7.17.0
-    volumes:
-      - ./ELK/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,z
-      - ./ELK/logstash/pipeline:/usr/share/logstash/pipeline:ro,z
-    ports:
-      - "5044:5044"
-      - "5010:5000/tcp"
-      - "5000:5000/udp"
-      - "9600:9600"
-    environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    depends_on:
-      - elasticsearch
-
-  kibana:
-    build:
-      context: ELK/kibana/
-      args:
-        ELK_VERSION: 7.17.0
-    volumes:
-      - ./ELK/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,z
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-
 volumes:
   elasticsearch: # postgres_data_dev: null
