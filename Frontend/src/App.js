@@ -6,6 +6,9 @@ import Result from "./pages/Result";
 import Search from "./pages/Search";
 import Header from "./components/Header";
 
+
+
+
 const App = () => {
   return (
     <div>
