@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 import pymongo
 import boto3
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # # model
 import tensorflow as tf
@@ -29,24 +30,27 @@ label_dict = ['Daisy','Sunflower','Tulip', 'Dandelion','Rose']
 def model_predict():  
     if request.method == 'POST':
         # Get the image 
-        img = tf.keras.preprocssing.image.load_img(file_path, target_size=(150,150,3))
+        file_path ="/backend/Images/"
+        file = request.files['upload_files']
+        img = tf.keras.preprocssing.image.load_img(file, target_size=(150,150,3))
+        # img = tf.keras.preprocssing.image.load_img("https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/IMG_6225.png", target_size=(150,150,3))
         x = img.img_to_array(img)
         x = np.true_divide(x,255)
         x = np.expand_dims(x, axis=0)
-        # x = preprocess_input(x, mode='caffe')
         
         # predict
         model._make_predict_function() # predict() 호출 전 
         preds = model.predict(x)
 
-        #data[] = []
+        data = []
         data["pred_proba"] = "{:.3f}".format(np.amax(preds))    # Max probability
-        data["pred_class"] = label_dict[preds[0]]               # 꽃 이름
+        print("data1:", data)
+        data["pred_class"] = label_dict[preds[0]]
+        print("data2:", data)               # 꽃 이름
         
         # json 형태로 반환
-        return flask.jsonify(data)
+    return jsonify(data)
     
-    return None
 
 
 s3 = boto3.client(
