@@ -1,9 +1,9 @@
 import React from "react";
-import styled from "styled-components";
+// import styled from "styled-components";
 
-const Logo = styled.div`
-  background-image: url("../public/images/Logo.png");
-`;
+// const Logo = styled.div`
+//   background-image: url("../public/images/Logo.png");
+// `;
 
 const Header = () => {
   return (

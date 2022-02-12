@@ -3,14 +3,6 @@ import React, { useState, useEffect } from "react";
 import "../css/Result.css";
 
 const Result = () => {
-  const info = {
-    method: "post",
-    data: {
-      name: "id",
-    },
-  };
-  axios(info).then((response) => console.log(response));
-
   return (
     <div className="w-full">
       <p
