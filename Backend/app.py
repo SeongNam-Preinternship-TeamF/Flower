@@ -72,7 +72,7 @@ def hello_pybo():
 
 @app.route('/api/v1/search', methods=["GET"])
 def searchAPI():
-    order = request.args.get('id')
+    order = request.args.get('q')
     docs = es.search(
         index='flower_idx',
         body={
