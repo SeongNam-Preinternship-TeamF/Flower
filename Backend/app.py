@@ -4,11 +4,14 @@ import pymongo
 from bson.objectid import ObjectId
 import boto3
 import os
+import time
 import json
 from elasticsearch import Elasticsearch, helpers
 from flask_cors import CORS, cross_origin
 from bson.json_util import dumps, loads
 from bson import json_util
+import redis
+from random import random
 
 
 app = Flask(__name__)
@@ -18,6 +21,8 @@ es = Elasticsearch(
     hosts=['http://elasticsearch:9200'],
     http_auth=('elastic', 'changeme')
 )
+
+cache = redis.Redis(host='redis', port=6379)
 
 mongo_info = os.environ['mondb_URI']
 
@@ -46,6 +51,26 @@ doc = myinform.find()
 
 # corsur to json
 json_data = dumps(list(doc))
+
+
+def get_hit_count():
+    time.sleep(random() * 0.5)
+    retries = 5
+    while True:
+        try:
+            return cache.incr('hits')
+        except redis.exceptions.ConnectionError as exc:
+            if retries == 0:
+                raise exc
+            retries -= 1
+            time.sleep(0.5)
+
+
+@app.route('/', methods=['GET'])
+# @common_counter
+def hello():
+    count = get_hit_count()
+    return 'Flask in a Docker!!! Hello World! I have been seen {} times.\n'.format(count)
 
 
 @app.route('/api/v1/initialize')
@@ -93,6 +118,7 @@ def searchAPI():
         "idList": obj
     }
     return return_dict
+
 
 # on development
 
