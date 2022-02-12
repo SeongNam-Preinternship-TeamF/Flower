@@ -54,7 +54,7 @@ def asdf():
     return 'Hello, Pybo!'
 
 
-@app.route('api/v1/initialize')
+@app.route('/api/v1/initialize')
 def hello_pybo():
 
     with open('mapping.json', 'r') as f:
@@ -72,7 +72,7 @@ def hello_pybo():
     return 'Hello, Pybo!'
 
 
-@app.route('api/v1/search', methods=["GET"])
+@app.route('/api/v1/search', methods=["GET"])
 def searchAPI():
     order = request.args.get('order_by')
     docs = es.search(
@@ -95,7 +95,7 @@ def searchAPI():
     return data_list
 
 
-@app.route('api/v1/upload', methods=["POST"])
+@app.route('/api/v1/upload', methods=["POST"])
 # @cross_origin(origin='*')
 def uploadFile():
 
