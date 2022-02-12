@@ -6,6 +6,9 @@ import Result from "./pages/Result";
 import Search from "./pages/Search";
 import SearchResult from "./pages/SearchResult";
 import Header from "./components/Header";
+import SearchPage from "./pages/SearchPage";
+
+
 
 const App = () => {
   return (
@@ -17,6 +20,7 @@ const App = () => {
           <Route path="/result/:imageId" element={<Result />} />
           <Route path="/search" element={<Search />} />
           <Route path="/searchresult" element={<SearchResult />} />
+          <Route path="/SearchPage" element={<SearchPage />} />
         </Routes>
       </BrowserRouter>
     </div>
