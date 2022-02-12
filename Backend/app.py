@@ -99,17 +99,30 @@ def searchAPI():
 
 @app.route('/api/v1/analyze', methods=["GET"])
 def analyze():
-    order = request.args.get('id')
-    return_dict = {
-        "id": order,
-        "name": "꽃 이름",
-        "flowerMeaning": "꽃 말",
-        "water": "물주기",
-        "caution": "주의사항",
-        "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/aaron-burden-wes5JqFptkQ-unsplash.jpg",
-        "sunlight": "일조량"
-    }
-    return return_dict
+    db_data = myurl.find_one(
+        ObjectId(request.args.get('id'))
+    )
+    # ObjectId to json
+    result = json.loads(
+        json_util.dumps(db_data)
+    )
+    req = result["URL"]
+    #############################################
+    # request to AI server + 서버 분리
+    #############################################
+    analysis = myinform.find_one({"name": "장미"})
+
+    result = json.loads(
+        json_util.dumps(analysis)
+    )
+    result.update(
+        {
+            "id": result["_id"]["$oid"]
+        }
+    )
+    del(result['_id'])
+
+    return result
 
 
 @app.route('/api/v1/upload', methods=["POST"])
@@ -140,14 +153,24 @@ def uploadFile():
     return {"id": str(result.inserted_id)}
 
 
-@app.route('/api/v1/result', methods=["GET"])
+@app.route('/api/v1/search/details', methods=["GET"])
 def respone_data():
-    id = request.form['id']
-    # print(id)
-    information = myinform.find_one({"_id": ObjectId(id)})
-    print("검색한거 타입", type(information))
-    json_information = json.loads(json_util.dumps(information))
+    json_information = json.loads(
+        json_util.dumps(
+            myinform.find_one(
+                ObjectId(
+                    request.args.get('id')
+                )
+            )
+        )
+    )
+    json_information.update(
+        {
+            "id": json_information["_id"]["$oid"]
+        }
+    )
     del(json_information['_id'])
+
     return json_information
 
 
