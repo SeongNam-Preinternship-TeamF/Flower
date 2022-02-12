@@ -1,15 +1,4 @@
 {
-    // "setting" :{
-    //     "analyzer":{
-    //         "analyzer": {
-    //             "my_analyzer": {
-    //                 "type": "custom",
-    //                 "tokenizer": "nori_tokenizer"
-    //             }
-    //         }
-
-    //     }
-    // },
     "mappings": {
         "properties": {
             "name": {

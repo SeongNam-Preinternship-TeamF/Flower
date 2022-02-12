@@ -1,12 +1,14 @@
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import pymongo
+from bson.objectid import ObjectId
 import boto3
 import os
 import json
 from elasticsearch import Elasticsearch, helpers
 from flask_cors import CORS, cross_origin
 from bson.json_util import dumps, loads
+from bson import json_util
 
 # exec(open("setting_bulk.py").read())
 
@@ -124,6 +126,16 @@ def uploadFile():
     return_json = json.dumps(file_path)
 
     return return_json
+
+@app.route('/api/v1/result', methods=["GET"])
+def respone_data():
+    id=request.form['id']
+    # print(id)
+    information = myinform.find_one({"_id": ObjectId(id)})
+    print("검색한거 타입", type(information))
+    json_information = json.loads(json_util.dumps(information))
+    del(json_information['_id'])
+    return json_information
 
 
 if __name__ == '__main__':
