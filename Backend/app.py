@@ -9,7 +9,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 from tensorflow import keras
 from keras.models import load_model
-#from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
 import numpy as np
 from PIL import Image
 
@@ -24,7 +23,7 @@ rootFolder = app.config['directory']
 
 # model load
 model = tf.keras.models.load_model('model/model.hdf5')
-label_dict = ['Daisy','Sunflower','Tulip', 'Dandelion','Rose']   
+
 
 
 @app.route('/predict',methods = ['GET','POST'])
@@ -33,27 +32,30 @@ def model_predict():
         # Get the image 
         file_path ="/backend/Images/"
         file = request.files['upload_files']
-        #img = Image.open(file)
-        #img = img.resize((150,150))
         
-        img = tf.keras.utils.load_img(file, target_size=(150,150,3))
+        img = Image.open(file)
+        img = img.resize((150,150))
+        # img = tf.keras.utils.load_img(file, target_size=(150,150,3))
         # img = tf.keras.preprocssing.image.load_img("https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/IMG_6225.png", target_size=(150,150,3))
-        x = img.img_to_array(img)
+        x = tf.keras.utils.img_to_array(img)
         x = np.true_divide(x,255)
         x = np.expand_dims(x, axis=0)
         
-        # predict
-        model._make_predict_function() # predict() 호출 전 
-        preds = model.predict(x)
-
-        data = []
-        data["pred_proba"] = "{:.3f}".format(np.amax(preds))    # Max probability
-        print("data1:", data)
-        data["pred_class"] = label_dict[preds[0]]
-        print("data2:", data)               # 꽃 이름
+        label_dict = ['Daisy','Sunflower','Tulip', 'Dandelion','Rose']  
         
-        # json 형태로 반환
-    return jsonify(data)
+        # predict
+        preds = model.predict(x)
+        predicted_index = np.argmax(preds)
+        #print("Predicted label: " + label_dict[predicted_index]) 
+        #print("Predicted score: " + "{:.3f}".format(np.amax(preds)))
+
+    return jsonify(
+            Predicted_label = label_dict[predicted_index],
+            Predicted_score = "{:.3f}".format(np.amax(preds))
+        )
+
+    # json 형태로 반환
+    # return jsonify()
     
 
 
