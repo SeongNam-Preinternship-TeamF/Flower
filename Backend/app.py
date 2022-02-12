@@ -84,10 +84,19 @@ def searchAPI():
             }
         }
     )
-
+    return_dict = {}
+    obj = []
     data_list = docs['hits']
-
-    return data_list
+    for hit in data_list['hits']:
+        obj.append(
+            {
+                "id": hit["_source"]["id"]
+            }
+        )
+    return_dict = {
+        "idList": obj
+    }
+    return return_dict
 
 
 @app.route('/api/v1/upload', methods=["POST"])
