@@ -4,11 +4,10 @@ import axios from "axios";
 import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
 
-const Main = (props) => {
-  const [img, setImg] = useState();
+const Main = () => {
   const [fileUrl, setFileUrl] = useState("");
   const [filename, setFilename] = useState("");
-  //const [taskID, setTaskID] = useState(1);
+  const [id, setId] = useState("");
 
   const navigate = useNavigate();
 
@@ -20,19 +19,18 @@ const Main = (props) => {
     e.preventDefault();
     const currentFile = e.target.files[0];
     setFileUrl(URL.createObjectURL(e.target.files[0]));
-    setImg(currentFile);
+    onSubmit(currentFile);
   };
 
-  const onSubmit = () => {
+  const onSubmit = (img) => {
     const formData = new FormData();
     formData.append("upload_files", img);
     setFilename(img.name);
-    navigate("/result");
     axios
-      .post("http://localhost:5001/upload", formData)
+      .post("http://localhost:5001/api/v1/upload", formData)
       .then((response) => {
         console.log(response);
-        props.onSubmit(response.data.url, response.data.result);
+        setId(response.data.id);
         alert("이미지 로딩 완료");
       })
       .catch((error) => {
@@ -64,9 +62,12 @@ const Main = (props) => {
           onChange={(e) => uploadImg(e)}
           ref={buttonRef}
         />
-        <button onClick={onSubmit} className="result">
-          결과 보기
-        </button>
+
+        {id !== "" && (
+          <button onClick={() => navigate(`/result/${id}`)} className="result">
+            결과 보기
+          </button>
+        )}
       </div>
     </div>
   );

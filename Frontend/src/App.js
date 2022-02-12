@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Main from "./pages/Main";
 import Result from "./pages/Result";
 import Search from "./pages/Search";
+import SearchResult from "./pages/SearchResult";
 import Header from "./components/Header";
 
 const App = () => {
@@ -13,8 +14,9 @@ const App = () => {
         <Header />
         <Routes>
           <Route exact path="/" element={<Main />} />
-          <Route path="/result" element={<Result />} />
+          <Route path="/result/:imageId" element={<Result />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/searchresult" element={<SearchResult />} />
         </Routes>
       </BrowserRouter>
     </div>
