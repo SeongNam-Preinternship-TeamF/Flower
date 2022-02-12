@@ -46,12 +46,6 @@ doc = myinform.find()
 json_data = dumps(list(doc))
 
 
-@app.route('/a')
-def asdf():
-
-    return 'Hello, Pybo!'
-
-
 @app.route('/api/v1/initialize')
 def hello_pybo():
 
