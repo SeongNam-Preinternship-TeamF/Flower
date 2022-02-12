@@ -4,7 +4,16 @@
   background-size: cover;
   opacity: 0.5;
 }
-.searchbar {
-  padding-top: 28rem;
+.searchInput {
   opacity: 1;
+  transform: translate(0, 10px);
+}
+.searchIcon {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  transform: rotate(45deg);
+  transition: all 0.4s cubic-bezier(0.65, -0.6, 0.24, 1.65);
 }
