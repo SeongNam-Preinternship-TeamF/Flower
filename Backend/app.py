@@ -87,8 +87,6 @@ def searchAPI():
     )
 
     data_list = docs['hits']
-    print(data_list)
-    print("data_list:", data_list)
 
     return data_list
 
