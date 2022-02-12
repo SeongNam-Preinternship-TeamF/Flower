@@ -15,8 +15,8 @@ const App = () => {
         <Routes>
           <Route exact path="/" element={<Main />} />
           <Route path="/result/:imageId" element={<Result />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/searchresult" element={<SearchResult />} />
+          <Route path="/search/:imageId" element={<Search />} />
+          <Route path="/searchresult/:searchID" element={<SearchResult />} />
         </Routes>
       </BrowserRouter>
     </div>

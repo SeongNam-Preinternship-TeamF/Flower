@@ -21,9 +21,7 @@ const SearchResult = () => {
         setFlowerInfo(response.data);
         alert("이미지 로딩 완료");
       })
-      .catch((error) => {
-        alert("이미지 로딩 실패");
-      });
+      .catch((error) => {});
   };
 
   useEffect(() => {
@@ -34,7 +32,6 @@ const SearchResult = () => {
     <div className="w-full">
       <input
         className="border-2 border-yellow-600 rounded-2xl flex mx-auto mt-16 w-96 h-9 pl-2"
-        style={{ boarderColor: "#dd6d22" }}
         type="text"
         value={searchValue}
         placeholder="'꽃이름' 또는 '꽃말'"
