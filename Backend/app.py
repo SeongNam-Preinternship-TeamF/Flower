@@ -99,17 +99,21 @@ def searchAPI():
 
 @app.route('/api/v1/analyze', methods=["GET"])
 def analyze():
-    order = request.args.get('id')
-    return_dict = {
-        "id": order,
-        "name": "꽃 이름",
-        "flowerMeaning": "꽃 말",
-        "water": "물주기",
-        "caution": "주의사항",
-        "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/aaron-burden-wes5JqFptkQ-unsplash.jpg",
-        "sunlight": "일조량"
-    }
-    return return_dict
+    id = request.args.get('id')
+    db_data = myurl.find_one(ObjectId(id))
+    # ObjectId to json
+    result = json.loads(json_util.dumps(db_data))
+    req = result["URL"]
+    #############################################
+    # request to AI server
+    #############################################
+    analysis = myinform.find_one({"name": "장미"})
+
+    result = json.loads(json_util.dumps(analysis))
+    result.update({"id": result["_id"]["$oid"]})
+    del(result['_id'])
+
+    return result
 
 
 @app.route('/api/v1/upload', methods=["POST"])
