@@ -50,7 +50,7 @@ const Result = () => {
         걷자
       </p>
       <img
-        className="w-200 flex justify-center mx-auto mt-4"
+        className="w-2/4 flex justify-center mx-auto mt-8"
         style={{ borderRadius: "4rem" }}
         alt="flower"
         src={flowerInfo.imgURL}
@@ -59,8 +59,8 @@ const Result = () => {
         {flowerInfo.name}
       </div>
       <ResultBox title="꽃말" content={flowerInfo.flowerMeaning} />
-      <ResultBox title="물주기" content={flowerInfo.flowerInfo.water} />
-      <ResultBox title="일조량" content={flowerInfo.flowerInfo.sunlight} />
+      <ResultBox title="물주기" content={flowerInfo.water} />
+      <ResultBox title="일조량" content={flowerInfo.sunlight} />
       <ResultBox title="주의 사항" content={flowerInfo.caution} />
     </div>
   );
