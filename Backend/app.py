@@ -94,6 +94,23 @@ def searchAPI():
     }
     return return_dict
 
+# on development
+
+
+@app.route('/api/v1/analyze', methods=["GET"])
+def analyze():
+    order = request.args.get('id')
+    return_dict = {
+        "id": order,
+        "name": "꽃 이름",
+        "flowerMeaning": "꽃 말",
+        "water": "물주기",
+        "caution": "주의사항",
+        "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/aaron-burden-wes5JqFptkQ-unsplash.jpg",
+        "sunlight": "일조량"
+    }
+    return return_dict
+
 
 @app.route('/api/v1/upload', methods=["POST"])
 def uploadFile():
