@@ -24,8 +24,6 @@ rootFolder = app.config['directory']
 # model load
 model = tf.keras.models.load_model('model/model.hdf5')
 
-
-
 @app.route('/predict',methods = ['GET','POST'])
 def model_predict():  
     if request.method == 'POST':
@@ -46,17 +44,12 @@ def model_predict():
         # predict
         preds = model.predict(x)
         predicted_index = np.argmax(preds)
-        #print("Predicted label: " + label_dict[predicted_index]) 
-        #print("Predicted score: " + "{:.3f}".format(np.amax(preds)))
 
     return jsonify(
             Predicted_label = label_dict[predicted_index],
             Predicted_score = "{:.3f}".format(np.amax(preds))
         )
 
-    # json 형태로 반환
-    # return jsonify()
-    
 
 
 s3 = boto3.client(
