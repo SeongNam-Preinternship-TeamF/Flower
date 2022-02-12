@@ -27,10 +27,10 @@ const Main = () => {
     formData.append("upload_files", img);
     setFilename(img.name);
     axios
-      .post("http://localhost:5001/upload", formData)
+      .post("http://localhost:5001/api/v1/upload", formData)
       .then((response) => {
         console.log(response);
-        setId(response.data);
+        setId(response.data.id);
         alert("이미지 로딩 완료");
       })
       .catch((error) => {
@@ -62,12 +62,12 @@ const Main = () => {
           onChange={(e) => uploadImg(e)}
           ref={buttonRef}
         />
-        {/* navigate(`/result/${id}`) */}
-        {/* {id !== "" && ( */}
-        <button onClick={() => navigate(`/result/1`)} className="result">
-          결과 보기
-        </button>
-        {/* )} */}
+
+        {id !== "" && (
+          <button onClick={() => navigate(`/result/${id}`)} className="result">
+            결과 보기
+          </button>
+        )}
       </div>
     </div>
   );
