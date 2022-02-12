@@ -58,7 +58,7 @@ def hello_pybo():
     with open('mapping.json', 'r') as f:
         mapping = json.load(f)
 
-    index = "index_example"
+    index = "flower_idx"
 
     es.indices.create(index=index, body=mapping)
 
@@ -74,8 +74,7 @@ def hello_pybo():
 def searchAPI():
     order = request.args.get('id')
     docs = es.search(
-        index='index_example',
-        # doc_type='_doc',
+        index='flower_idx',
         body={
             "query": {
                 "multi_match": {
