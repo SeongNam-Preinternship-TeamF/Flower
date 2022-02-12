@@ -10,8 +10,6 @@ from flask_cors import CORS, cross_origin
 from bson.json_util import dumps, loads
 from bson import json_util
 
-# exec(open("setting_bulk.py").read())
-
 
 app = Flask(__name__)
 CORS(app)
@@ -50,23 +48,17 @@ doc = myinform.find()
 json_data = dumps(list(doc))
 
 
-@app.route('/a')
-def asdf():
-
-    return 'Hello, Pybo!'
-
-
 @app.route('/api/v1/initialize')
 def hello_pybo():
 
     with open('mapping.json', 'r') as f:
         mapping = json.load(f)
 
-    index = "index_example"
+    index = "flower_idx"
 
     es.indices.create(index=index, body=mapping)
 
-    with open("dictionary_data.json", encoding='utf-8') as json_file:
+    with open("local_dict.json", encoding='utf-8') as json_file:
         json_data = json.loads(json_file.read())
 
     helpers.bulk(es, json_data, index=index)
@@ -76,29 +68,34 @@ def hello_pybo():
 
 @app.route('/api/v1/search', methods=["GET"])
 def searchAPI():
-    order = request.args.get('order_by')
+    order = request.args.get('q')
     docs = es.search(
-        index='index_example',
-        # doc_type='_doc',
+        index='flower_idx',
         body={
             "query": {
                 "multi_match": {
                     "query": order,
-                    "fields": ["name", "flower_meaning", "water", "caution"]
+                    "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
                 }
             }
         }
     )
-
+    return_dict = {}
+    obj = []
     data_list = docs['hits']
-    print(data_list)
-    print("data_list:", data_list)
-
-    return data_list
+    for hit in data_list['hits']:
+        obj.append(
+            {
+                "id": hit["_source"]["id"]
+            }
+        )
+    return_dict = {
+        "idList": obj
+    }
+    return return_dict
 
 
 @app.route('/api/v1/upload', methods=["POST"])
-# @cross_origin(origin='*')
 def uploadFile():
 
     file = request.files['upload_files']
