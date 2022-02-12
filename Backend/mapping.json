@@ -4,10 +4,13 @@
             "name": {
                 "type": "text"
             },
-            "flower meaning": {
+            "flowerMeaning": {
                 "type": "text"
             },
             "water": {
+                "type": "text"
+            },
+            "sunlight": {
                 "type": "text"
             },
             "caution": {
