@@ -8,8 +8,6 @@ from elasticsearch import Elasticsearch, helpers
 from flask_cors import CORS, cross_origin
 from bson.json_util import dumps, loads
 
-# exec(open("setting_bulk.py").read())
-
 
 app = Flask(__name__)
 CORS(app)
