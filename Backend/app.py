@@ -4,11 +4,20 @@ import pymongo
 import boto3
 import os
 import json
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, helpers
 from flask_cors import CORS, cross_origin
+from bson.json_util import dumps, loads
+
+# exec(open("setting_bulk.py").read())
+
 
 app = Flask(__name__)
 CORS(app)
+
+es = Elasticsearch(
+    hosts=['http://elasticsearch:9200'],
+    http_auth=('elastic', 'changeme')
+)
 
 mongo_info = os.environ['mondb_URI']
 
@@ -33,14 +42,61 @@ mydb = myclient.flowerdb
 myinform = mydb.inform
 myurl = mydb.photo_url
 
+doc = myinform.find()
 
-@app.route('/')
-def hello_pybo():
+# corsur to json
+json_data = dumps(list(doc))
+
+
+@app.route('/a')
+def asdf():
 
     return 'Hello, Pybo!'
 
 
-@app.route('/upload', methods=["POST"])
+@app.route('/api/v1/initialize')
+def hello_pybo():
+
+    with open('mapping.json', 'r') as f:
+        mapping = json.load(f)
+
+    index = "index_example"
+
+    es.indices.create(index=index, body=mapping)
+
+    with open("dictionary_data.json", encoding='utf-8') as json_file:
+        json_data = json.loads(json_file.read())
+
+    helpers.bulk(es, json_data, index=index)
+
+    return 'Hello, Pybo!'
+
+
+@app.route('/api/v1/search', methods=["GET"])
+def searchAPI():
+    order = request.args.get('order_by')
+    docs = es.search(
+        index='index_example',
+        # doc_type='_doc',
+        body={
+            "query": {
+                "multi_match": {
+                    "query": order,
+                    "fields": ["name", "flower_meaning", "water", "caution"]
+                }
+            }
+        }
+    )
+
+    data_list = docs['hits']
+    print(data_list)
+    print("data_list:", data_list)
+
+    return data_list
+
+
+@app.route('/api/v1/upload', methods=["POST"])
+# @cross_origin(origin='*')
 def uploadFile():
 
     file = request.files['upload_files']
