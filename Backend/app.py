@@ -62,7 +62,7 @@ def hello_pybo():
 
     es.indices.create(index=index, body=mapping)
 
-    with open("dictionary_data.json", encoding='utf-8') as json_file:
+    with open("local_dict.json", encoding='utf-8') as json_file:
         json_data = json.loads(json_file.read())
 
     helpers.bulk(es, json_data, index=index)
@@ -91,7 +91,6 @@ def searchAPI():
 
 
 @app.route('/api/v1/upload', methods=["POST"])
-# @cross_origin(origin='*')
 def uploadFile():
 
     file = request.files['upload_files']
