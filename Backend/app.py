@@ -105,7 +105,7 @@ def analyze():
     result = json.loads(json_util.dumps(db_data))
     req = result["URL"]
     #############################################
-    # request to AI server
+    # request to AI server + 서버 분리
     #############################################
     analysis = myinform.find_one({"name": "장미"})
 
