@@ -72,7 +72,7 @@ def hello_pybo():
 
 @app.route('/api/v1/search', methods=["GET"])
 def searchAPI():
-    order = request.args.get('order_by')
+    order = request.args.get('id')
     docs = es.search(
         index='index_example',
         # doc_type='_doc',
@@ -80,7 +80,7 @@ def searchAPI():
             "query": {
                 "multi_match": {
                     "query": order,
-                    "fields": ["name", "flower_meaning", "water", "caution"]
+                    "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
                 }
             }
         }
