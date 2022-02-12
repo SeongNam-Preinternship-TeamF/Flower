@@ -118,15 +118,14 @@ def uploadFile():
         "URL": file_dir
     }
 
-    myurl.insert_one(file_db)
+    result = myurl.insert_one(file_db)
 
-    return_json = json.dumps(file_path)
+    return {"id": str(result.inserted_id)}
 
-    return return_json
 
 @app.route('/api/v1/result', methods=["GET"])
 def respone_data():
-    id=request.form['id']
+    id = request.form['id']
     # print(id)
     information = myinform.find_one({"_id": ObjectId(id)})
     print("검색한거 타입", type(information))
