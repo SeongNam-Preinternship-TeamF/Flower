@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from werkzeug.utils import secure_filename
 import pymongo
 from bson.objectid import ObjectId
@@ -12,10 +12,17 @@ from bson.json_util import dumps, loads
 from bson import json_util
 import redis
 from random import random
+from flask_restx import Resource, Api, Namespace
 
 
 app = Flask(__name__)
 CORS(app)
+
+api = Api(app)
+
+find = Namespace('Todo')
+api.add_namespace(find,'/test')
+
 
 es = Elasticsearch(
     hosts=['http://elasticsearch:9200'],
@@ -66,11 +73,11 @@ def get_hit_count():
             time.sleep(0.5)
 
 
-@app.route('/', methods=['GET'])
-# @common_counter
-def hello():
-    count = get_hit_count()
-    return 'Flask in a Docker!!! Hello World! I have been seen {} times.\n'.format(count)
+@find.route('/', methods=['GET'])
+class Hello(Resource):
+    def get(self):
+        count = get_hit_count()
+        return 'Flask in a Docker!!! Hello World! I have been seen {} times.\n'.format(count)
 
 
 @app.route('/api/v1/initialize')
