@@ -20,8 +20,8 @@ CORS(app)
 
 api = Api(app)
 
-find = Namespace('Todo')
-api.add_namespace(find,'/test')
+find = Namespace('Search')
+api.add_namespace(find,'/api')
 
 
 es = Elasticsearch(
@@ -98,113 +98,117 @@ def hello_pybo():
     return 'Hello, Pybo!'
 
 
-@app.route('/api/v1/search', methods=["GET"])
-def searchAPI():
-    order = request.args.get('q')
-    docs = es.search(
-        index='flower_idx',
-        body={
-            "query": {
-                "multi_match": {
-                    "query": order,
-                    "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
+@find.route('/v1/search', methods=["GET"])
+class searchAPI(Resource):
+    def get():
+        order = request.args.get('q')
+        docs = es.search(
+            index='flower_idx',
+            body={
+                "query": {
+                    "multi_match": {
+                        "query": order,
+                        "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
+                    }
                 }
             }
-        }
-    )
-    return_dict = {}
-    obj = []
-    data_list = docs['hits']
-    for hit in data_list['hits']:
-        obj.append(
-            {
-                "id": hit["_source"]["id"]
-            }
         )
-    return_dict = {
-        "idList": obj
-    }
-    return return_dict
+        return_dict = {}
+        obj = []
+        data_list = docs['hits']
+        for hit in data_list['hits']:
+            obj.append(
+                {
+                    "id": hit["_source"]["id"]
+                }
+            )
+        return_dict = {
+            "idList": obj
+        }
+        return return_dict
 
 
 # on development
 
 
-@app.route('/api/v1/analyze', methods=["GET"])
-def analyze():
-    db_data = myurl.find_one(
-        ObjectId(request.args.get('id'))
-    )
-    # ObjectId to json
-    result = json.loads(
-        json_util.dumps(db_data)
-    )
-    req = result["URL"]
-    #############################################
-    # request to AI server + 서버 분리
-    #############################################
-    analysis = myinform.find_one({"name": "장미"})
+@find.route('/v1/analyze', methods=["GET"])
+class analyze(Resource):
+    def get():
+        db_data = myurl.find_one(
+            ObjectId(request.args.get('id'))
+        )
+        # ObjectId to json
+        result = json.loads(
+            json_util.dumps(db_data)
+        )
+        req = result["URL"]
+        #############################################
+        # request to AI server + 서버 분리
+        #############################################
+        analysis = myinform.find_one({"name": "장미"})
 
-    result = json.loads(
-        json_util.dumps(analysis)
-    )
-    result.update(
-        {
-            "id": result["_id"]["$oid"]
+        result = json.loads(
+            json_util.dumps(analysis)
+        )
+        result.update(
+            {
+                "id": result["_id"]["$oid"]
+            }
+        )
+        del(result['_id'])
+
+        return result
+
+
+@find.route('/v1/upload', methods=["POST"])
+class uploadFile(Resource):
+    def post():
+
+        file = request.files['upload_files']
+        # 한글 이름의 파일 입력시 validation이 안되는 문제가 존재
+        file.filename = secure_filename(file.filename)
+
+        # backend 서버에 파일 저장
+        file.save(os.path.join(
+            app.config['UPLOAD_FOLDER'], file.filename))
+
+        # s3 bucket에 이미지 파일 저장
+        file_path = app.config['UPLOAD_FOLDER'] + "/" + file.filename
+        s3.upload_file(
+            file_path, rootFolder, file.filename)
+
+        file_dir = os.getenv('endpoint_url') + "/" + \
+            app.config['directory'] + "/" + file.filename
+
+        file_db = {
+            "URL": file_dir
         }
-    )
-    del(result['_id'])
 
-    return result
+        result = myurl.insert_one(file_db)
 
-
-@app.route('/api/v1/upload', methods=["POST"])
-def uploadFile():
-
-    file = request.files['upload_files']
-    # 한글 이름의 파일 입력시 validation이 안되는 문제가 존재
-    file.filename = secure_filename(file.filename)
-
-    # backend 서버에 파일 저장
-    file.save(os.path.join(
-        app.config['UPLOAD_FOLDER'], file.filename))
-
-    # s3 bucket에 이미지 파일 저장
-    file_path = app.config['UPLOAD_FOLDER'] + "/" + file.filename
-    s3.upload_file(
-        file_path, rootFolder, file.filename)
-
-    file_dir = os.getenv('endpoint_url') + "/" + \
-        app.config['directory'] + "/" + file.filename
-
-    file_db = {
-        "URL": file_dir
-    }
-
-    result = myurl.insert_one(file_db)
-
-    return {"id": str(result.inserted_id)}
+        return {"id": str(result.inserted_id)}
 
 
-@app.route('/api/v1/search/details', methods=["GET"])
-def respone_data():
-    json_information = json.loads(
-        json_util.dumps(
-            myinform.find_one(
-                ObjectId(
-                    request.args.get('id')
+@find.route('/v1/search/details', methods=["GET"])
+class respone_data(Resource):
+    def get():
+        json_information = json.loads(
+            json_util.dumps(
+                myinform.find_one(
+                    ObjectId(
+                        request.args.get('id')
+                    )
                 )
             )
         )
-    )
-    json_information.update(
-        {
-            "id": json_information["_id"]["$oid"]
-        }
-    )
-    del(json_information['_id'])
+        json_information.update(
+            {
+                "id": json_information["_id"]["$oid"]
+            }
+        )
+        del(json_information['_id'])
 
-    return json_information
+        return json_information
 
 
 if __name__ == '__main__':
