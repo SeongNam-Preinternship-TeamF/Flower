@@ -68,12 +68,13 @@ api = Api(
 find = Namespace('Search',description='어떤 식물인지 찾기 위한 api')
 api.add_namespace(find,'/api')
 
-todo_fields = find.model('Todo', {  # Model 객체 생성
-    'data': fields.String(description='a Todo', required=True, example="what to do")
+    #post 메소드에 들어가는 내용
+img_uploaded = find.model('Todo', {  # Model 객체 생성
+    'data': fields.String(description='사진을 업로드 받음', required=True, example="what to do")
 })
 
-todo_fields_with_id = find.inherit('Todo With ID', todo_fields, {  # todo_fields 상속 받음
-    'todo_id': fields.Integer(description='a Todo ID')
+img_uridb_id = find.inherit('Todo With ID',{  # todo_fields 상속 받음
+    'todo_id': fields.String(description='업로드 받은 이미지를 s3에 저장, 그 s3의 uri를 저장한 db의 id')
 }) 
 
 # -----------------------
@@ -92,7 +93,7 @@ def get_hit_count():
 
 
 @find.route('/', methods=['GET'])
-@find.doc(params={'get_hit_count': '맞는 갯수'})  #객체를 받으며, 키로는 파라미터 변수명, 값으로는 설명을 적을 수 있습니다.
+@find.doc(params={'count': '일치하는 갯수'})  #객체를 받으며, 키로는 파라미터 변수명, 값으로는 설명을 적을 수 있습니다.
 class Hello(Resource):
     @find.doc(responses={202: 'Success'})   # 객체를 받으며, 키로는 Status Code, 값으로는 설멍을 적을 수 있습니다.
     @find.doc(responses={500: 'Failed'})    # 에러 코드는 delete의 값  get에 맞는 걸로 바꿔야함
@@ -121,11 +122,11 @@ def hello_pybo():
 
 
 @find.route('/v1/search', methods=["GET"])
-@find.doc(params={'get_hit_count': '맞는 갯수'}) 
+@find.doc(params={'q': '검색어'}) 
 class searchAPI(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
-    def get():
+    def get(self):
         order = request.args.get('q')
         docs = es.search(
             index='flower_idx',
@@ -157,11 +158,11 @@ class searchAPI(Resource):
 
 
 @find.route('/v1/analyze', methods=["GET"])
-@find.doc(params={'get_hit_count': '맞는 갯수'}) 
+@find.doc(params={'id': 'img가 저장된 uri'}) 
 class analyze(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
-    def get():
+    def get(self):
         db_data = myurl.find_one(
             ObjectId(request.args.get('id'))
         )
@@ -191,9 +192,9 @@ class analyze(Resource):
 @find.route('/v1/upload', methods=["POST"])
 @find.doc(params={'upload_files': '사진 파일'})
 class uploadFile(Resource):
-    @find.expect(todo_fields)
-    @find.response(201, 'Success', todo_fields_with_id)
-    def post():
+    @find.expect(img_uploaded)
+    @find.response(201, 'Success', img_uridb_id)
+    def post(self):
 
         file = request.files['upload_files']
         # 한글 이름의 파일 입력시 validation이 안되는 문제가 존재
@@ -225,7 +226,7 @@ class uploadFile(Resource):
 class respone_data(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
-    def get():
+    def get(self):
         json_information = json.loads(
             json_util.dumps(
                 myinform.find_one(
