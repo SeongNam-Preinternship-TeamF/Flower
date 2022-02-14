@@ -32,7 +32,7 @@ const Header = () => {
           <a className="nav-item nav-link active" href="/">
             홈 <span className="sr-only">(current)</span>
           </a>
-          <a className="nav-item nav-link" href="/search">
+          <a className="nav-item nav-link" href="/searchpage">
             꽃 찾기
           </a>
         </div>

@@ -6,6 +6,7 @@ import Result from "./pages/Result";
 import Search from "./pages/Search";
 import SearchResult from "./pages/SearchResult";
 import Header from "./components/Header";
+import SearchPage from "./pages/SearchPage";
 
 const App = () => {
   return (
@@ -15,8 +16,8 @@ const App = () => {
         <Routes>
           <Route exact path="/" element={<Main />} />
           <Route path="/result/:imageId" element={<Result />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/searchresult" element={<SearchResult />} />
+          <Route path="/searchpage" element={<SearchPage />} />
+          <Route path="/searchresult/:searchId" element={<SearchResult />} />
         </Routes>
       </BrowserRouter>
     </div>
