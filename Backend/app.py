@@ -97,6 +97,7 @@ def get_hit_count():
 class Hello(Resource):
     @find.doc(responses={202: 'Success'})   # 객체를 받으며, 키로는 Status Code, 값으로는 설멍을 적을 수 있습니다.
     @find.doc(responses={500: 'Failed'})    # 에러 코드는 delete의 값  get에 맞는 걸로 바꿔야함
+    # @common_counter
     def get(self):
         """"이 api는 어떤건지 잘 모르겠습니다"""
         count = get_hit_count()
@@ -121,50 +122,55 @@ def hello_pybo():
     return 'Hello, Pybo!'
 
 
-@app.route('/api/v1/search', methods=["GET"])
-def searchAPI():
-    order = request.args.get('q')
-    # docs = es.search(
-    #     index='flower_idx',
-    #     body={
-    #         "query": {
-    #             "multi_match": {
-    #                 "query": order,
-    #                 "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
-    #             }
-    #         }
-    #     }
-    # )
-    return_dict = {}
-    obj = []
-    # data_list = docs['hits']
-    # for hit in data_list['hits']:
-    #     obj.append(
-    #         {
-    #             "id": hit["_source"]["id"]
-    #         }
-    #     )
+@find.route('/v1/search', methods=["GET"])
+@find.doc(params={'q': '검색어'}) 
+class searchAPI(Resource):
+    @find.doc(responses={202: 'Success'})
+    @find.doc(responses={500: 'Failed'})
+    def searchAPI():
+        """"검색어를 받아와 elasticsearch를 통해 일치하는 내용이 있는 모든 documents 를 반환해주는 api"""
+        order = request.args.get('q')
+        # docs = es.search(
+        #     index='flower_idx',
+        #     body={
+        #         "query": {
+        #             "multi_match": {
+        #                 "query": order,
+        #                 "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
+        #             }
+        #         }
+        #     }
+        # )
+        return_dict = {}
+        obj = []
+        # data_list = docs['hits']
+        # for hit in data_list['hits']:
+        #     obj.append(
+        #         {
+        #             "id": hit["_source"]["id"]
+        #         }
+        #     )
 
-    obj = [
-        {
-            "name": "6204e11b4ca120dbd68abd08",
-            "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/aaron-burden-wes5JqFptkQ-unsplash.jpg",
-        },
-        {
-            "name": "6204e11b4ca120dbd68abd08",
-            "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/annie-spratt-4wz1YsANFB0-unsplash.jpg",
-        },
-        {
-            "name": "6204e11b4ca120dbd68abd08",
-            "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/edward-howell-dZ3YRMco4XU-unsplash.jpg",
+        obj = [
+            {
+                "name": "6204e11b4ca120dbd68abd08",
+                "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/aaron-burden-wes5JqFptkQ-unsplash.jpg",
+            },
+            {
+                "name": "6204e11b4ca120dbd68abd08",
+                "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/annie-spratt-4wz1YsANFB0-unsplash.jpg",
+            },
+            {
+                "name": "6204e11b4ca120dbd68abd08",
+                "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/edward-howell-dZ3YRMco4XU-unsplash.jpg",
+            }
+        ]
+
+        return_dict = {
+            "result_list": obj
         }
-    ]
 
-    return_dict = {
-        "result_list": obj
-    }
-
-    return return_dict
+        return return_dict
 
 
 # on development
