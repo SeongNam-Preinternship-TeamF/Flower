@@ -116,16 +116,23 @@ def hello_pybo():
     # call_data = json_util.dumps(myinform.find())
     # print(type(call_data))
     # print(call_data)
-    for i in myinform.find():
-        print(type(i))
-        print(i)
+
+    # data = {}
+    # data['posts'] = []
+    # for i in myinform.find():
+    #     del(i['_id'])
+    #     data['posts'].append(i)
+
+
+    # with open('sample.json', 'w') as outfile:
+    #     json.dump(data, outfile,indent=7,ensure_ascii=False)
+    
+    if es.indices.exists(index=index):
+        es.indices.delete(index=index)
 
     es.indices.create(index=index, body=mapping)    
 
-    with open('someData.json', 'utf-8') as one_file:
-        json.dump(call_data, one_file)   #파일 생성부
-
-    with open("someData.json", encoding='utf-8') as json_file:
+    with open("sample.json", encoding='utf-8') as json_file:
         json_data = json.loads(json_file.read())
 
     helpers.bulk(es, json_data, index=index)
