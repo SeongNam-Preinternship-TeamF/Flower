@@ -1,21 +1,23 @@
-import React, { useState } from 'react'
-import styled, { css } from 'styled-components'
-import { Link } from 'react-router-dom'
+import React, { useState } from "react";
+import styled, { css } from "styled-components";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const horizontalCenter = css`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-`
+`;
 
 const Container = styled.div`
   position: relative;
   width: 100%;
-  border-bottom: 2px solid #0bde8b;
-  background-color: #fff;
-  padding: 20px 60px;
+  border-bottom: 2px solid #dd6d22;
+  background-color: #ffffff;
+  padding: 15px 50px;
   box-sizing: border-box;
-`
+`;
 
 //Link태그의 스타일을 입히는거임(페이지이동하는 버튼)
 //horizontalCenter 스타일 컴포넌트를 믹스인하여 속성값 전달
@@ -31,7 +33,7 @@ const ArrowIcon = styled(Link)`
   background-image: url(https://s.pstatic.net/static/www/m/uit/2020/sp_search.623c21.png);
   background-size: 467px 442px;
   background-repeat: no-repeat;
-`
+`;
 
 const SearchIcon = styled.span`
   ${horizontalCenter}
@@ -46,7 +48,7 @@ const SearchIcon = styled.span`
   background-image: url(https://s.pstatic.net/static/www/m/uit/2020/sp_search.623c21.png);
   background-size: 467px 442px;
   background-repeat: no-repeat;
-`
+`;
 
 //글자를 입력하면 RemoveIcon이 나오게 되고 누르면 input의 value값이 사라집니다
 const RemoveIcon = styled.span`
@@ -62,11 +64,11 @@ const RemoveIcon = styled.span`
   background-image: url(https://s.pstatic.net/static/www/m/uit/2020/sp_search.623c21.png);
   background-size: 467px 442px;
   background-repeat: no-repeat;
-`
+`;
 
 const InputContainer = styled.div`
   position: relative;
-`
+`;
 
 const Input = styled.input`
   width: 100%;
@@ -80,7 +82,7 @@ const Input = styled.input`
     `
     padding-right: 25px; 
   `}
-`
+`;
 
 function SearchBar({ onAddKeyword }) {
   // 1. 검색어를 state 로 다루도록 변경
@@ -88,49 +90,69 @@ function SearchBar({ onAddKeyword }) {
   // 3. Link to 설명
 
   //form을 관련 요소를 다룰때는 2-way 데이터 바인딩을 해줍니다! (input 의 value에 state를 넣는 것)
-  const [keyword, setKeyword] = useState('')
+  const [text, setText] = useState("");
+  const navigate = useNavigate();
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      text: text,
+    };
+    await axios
+      .get("http://localhost/api/v1/search?q=" + text, data)
+      .then((response) => {
+        console.log(response);
+        setText(response.data.id);
+      })
+      .catch((error) => {
+        alert("다시 검색해주세요");
+      });
+  };
 
   const handleKeyword = (e) => {
-    setKeyword(e.target.value)
-  }
+    setText(e.target.value);
+  };
   const handleEnter = (e) => {
-    if (keyword && e.keyCode === 13) {
+    if (text && e.keyCode === 13) {
       //엔터일때 부모의 addkeyword에 전달
-      onAddKeyword(keyword)
-      setKeyword('')
+      onAddKeyword(text);
+      setText("");
+      navigate(`/searchresult/${text}`);
     }
-  }
+  };
 
   const handleClearKeyword = () => {
-    setKeyword('')
-  }
+    setText("");
+  };
 
   //느낌표로 키워드를 갖고있냐 없냐로 boolean 형태로 나옴
   //키워드를 가지고 있다면 active가 발생하여 padding이 발생함. // 패딩이 없으면 x 아이콘까지 글자가 침법하기 때문
-  const hasKeyword = !!keyword
+  const hasKeyword = !!text;
 
   {
     //keyword가 있으면 true, 없으면 false가 리턴이 되는 것을 확인 할 수 있습니다
-    console.log(!!keyword)
+    console.log(!!text);
   }
 
   return (
-    <Container>
-      <ArrowIcon to="/" />
-      <InputContainer>
-        <Input
-          placeholder="'꽃이름' 또는 '꽃말' 을 입력해주세요."
-          active={hasKeyword}
-          value={keyword}
-          onChange={handleKeyword}
-          onKeyDown={handleEnter}
-        />
+    <div className="w-50 mx-auto">
+      <Container>
+        <ArrowIcon to="/" />
+        <InputContainer>
+          <Input
+            placeholder="'꽃이름' 또는 '꽃말' 을 입력해주세요."
+            active={hasKeyword}
+            value={text}
+            onChange={handleKeyword}
+            onKeyDown={handleEnter}
+          />
 
-        {keyword && <RemoveIcon onClick={handleClearKeyword} />}
-      </InputContainer>
-      <SearchIcon />
-    </Container>
-  )
+          {text && <RemoveIcon onClick={handleClearKeyword} />}
+        </InputContainer>
+        <SearchIcon onClick={() => navigate(`/searchresult/${text}`)} />
+      </Container>
+    </div>
+  );
 }
 
-export default SearchBar
+export default SearchBar;

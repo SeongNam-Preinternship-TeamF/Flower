@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../css/Search.css";
+//import "../css/Search.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 //import Loading from "../components/Loading";
@@ -28,28 +28,24 @@ const Search = (props) => {
         console.log(response);
         setSearch(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.log("catch");
+      });
   };
-
-  const onCheckEnter = (e) => {
-    if(e.key === 'Enter') {
-      handleInputClear()
-    }
-  }
 
   return (
     <div className="w-full h-full ">
       <div className="background mx-auto">
-        <div onKeyPress={onCheckEnter}>
-         <div className="searchbar w-full mt-30 flex justify-center  ">
-           <input
-             type="text"
-             value={searchValue}
-             placeholder="'꽃이름' 또는 '꽃말'" 
-              onChange={handleInputChange}
+        <div>
+          <div className="searchbar w-full mt-30 flex justify-center  ">
+            <input
+              type="text"
+              value={searchValue}
+              placeholder="'꽃이름' 또는 '꽃말'"
+              onChange={(e) => setSearchValue(e.target.value)}
             />
-           <button onClick={handleInputClear}> Search </button>
-           </div> 
+            <button onClick={onSubmit}> Search </button>
+          </div>
         </div>
       </div>
     </div>
