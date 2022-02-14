@@ -21,8 +21,8 @@ services:
       discovery.type: single-node
 
   backend:
-    #depends_on:
-    #  - elasticsearch
+    depends_on:
+      - elasticsearch
     build:
       context: ./Backend # local repo의 Dockerfile의 위치
     command: flask run --host=0.0.0.0 --port=5000
@@ -30,8 +30,6 @@ services:
       - 5001:5000
     volumes:
       - ./Backend/:/backend/
-    # expose:
-    #   - 5001
     env_file:
       - ./settings/dev/.env.dev
     environment:
