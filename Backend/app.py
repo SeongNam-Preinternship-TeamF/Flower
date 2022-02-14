@@ -11,6 +11,8 @@ from tensorflow import keras
 from keras.models import load_model
 import numpy as np
 from PIL import Image
+import requests
+from io import BytesIO
 
 
 app = Flask(__name__)
@@ -28,13 +30,15 @@ model = tf.keras.models.load_model('model/model.hdf5')
 def model_predict():  
     if request.method == 'POST':
         # Get the image 
-        file_path ="/backend/Images/"
-        file = request.files['upload_files']
+        #file_path ="/backend/Images/"
+        #file = request.files['upload_files']
+        #img = Image.open(file)
         
-        img = Image.open(file)
+        url = "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/aaron-burden-2IzoIHBgYAo-unsplash.jpg"
+        response = requests.get(url)
+        img = Image.open(BytesIO(response.content))
+        
         img = img.resize((150,150))
-        # img = tf.keras.utils.load_img(file, target_size=(150,150,3))
-        # img = tf.keras.preprocssing.image.load_img("https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/IMG_6225.png", target_size=(150,150,3))
         x = tf.keras.utils.img_to_array(img)
         x = np.true_divide(x,255)
         x = np.expand_dims(x, axis=0)
