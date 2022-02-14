@@ -112,9 +112,18 @@ def hello_pybo():
 
     index = "flower_idx"
 
-    es.indices.create(index=index, body=mapping)
+    db_cur = list(myinform.find())
+    call_data = json_util.dumps(db_cur)
 
-    with open("local_dict.json", encoding='utf-8') as json_file:
+    print(type(call_data))
+
+
+    es.indices.create(index=index, body=mapping)    
+
+    with open('someData.json', 'w') as one_file:
+        json.dump(call_data, one_file)   #파일 생성부
+
+    with open("someData.json", encoding='utf-8') as json_file:
         json_data = json.loads(json_file.read())
 
     helpers.bulk(es, json_data, index=index)
@@ -127,7 +136,7 @@ def hello_pybo():
 class searchAPI(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
-    def searchAPI():
+    def get(self):
         """"검색어를 받아와 elasticsearch를 통해 일치하는 내용이 있는 모든 documents 를 반환해주는 api"""
         order = request.args.get('q')
         # docs = es.search(
