@@ -112,15 +112,17 @@ def hello_pybo():
 
     index = "flower_idx"
 
-    db_cur = list(myinform.find())
-    call_data = json_util.dumps(db_cur)
-
-    print(type(call_data))
-
+    # db_cur = list(myinform.find())
+    # call_data = json_util.dumps(myinform.find())
+    # print(type(call_data))
+    # print(call_data)
+    for i in myinform.find():
+        print(type(i))
+        print(i)
 
     es.indices.create(index=index, body=mapping)    
 
-    with open('someData.json', 'w') as one_file:
+    with open('someData.json', 'utf-8') as one_file:
         json.dump(call_data, one_file)   #파일 생성부
 
     with open("someData.json", encoding='utf-8') as json_file:
