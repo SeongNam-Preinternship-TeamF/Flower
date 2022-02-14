@@ -45,7 +45,7 @@ const SearchIcon = styled.span`
   overflow: hidden;
   color: transparent;
   vertical-align: middle;
-  background-image: url(https://s.pstatic.net/static/www/m/uit/2020/sp_search.623c21.png);
+  background-image: url(https://i.ibb.co/j6vk8Pd/sp-search-623c21.png);
   background-size: 467px 442px;
   background-repeat: no-repeat;
 `;
@@ -136,7 +136,7 @@ function SearchBar({ onAddKeyword }) {
 
   return (
     <div className="w-50 mx-auto">
-      <Container>
+      <Container className="rounded-full">
         <ArrowIcon to="/" />
         <InputContainer>
           <Input

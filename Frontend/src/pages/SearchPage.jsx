@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import History from "../components/search/history.js";
-import SearchBar from "../components/search/search-bar.js";
+import History from "../components/history.js";
+import SearchBar from "../components/search-bar.js";
+import "../css/Result.css";
 <css></css>;
 
 function SearchPage() {
@@ -43,7 +44,7 @@ function SearchPage() {
   //자식 컴포넌트에서 setState를 못하기때문에 그거를 바꿔주는 함수를 선언후 그 함수를 넘겨야함
   return (
     <div className="relative">
-      <div className="bg-[url('../images/flower_main.png)']">
+      <div className="backimage bg-cover ">
         <div>
           <SearchBar
             calssName="mt-80"

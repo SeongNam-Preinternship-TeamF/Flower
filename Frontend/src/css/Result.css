@@ -1,17 +1,22 @@
-.margin{
-    width: 100rem;
-    height: 100vh;
+.margin {
+  width: 100rem;
+  height: 100vh;
 }
-.title{
-    letter-spacing: 2rem;
-    margin: 0 auto;
+.title {
+  letter-spacing: 2rem;
+  margin: 0 auto;
 }
-.letter{
-    color: #E37B7B;
+.letter {
+  color: #e37b7b;
 }
-.flowerResult{
-    margin: 0 auto;
-    border-radius: 5rem;
-    width: 50rem;
-    height: 20rem;
+.flowerResult {
+  margin: 0 auto;
+  border-radius: 5rem;
+  width: 50rem;
+  height: 20rem;
+}
+.backimage {
+  background-image: url("../images/Flower.png");
+  background-repeat: cover;
+  height: 63rem;
 }

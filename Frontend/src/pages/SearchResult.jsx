@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../css/Result.css";
 import SearchBox from "./SearchBox";
-import History from "../components/search/history.js";
-import SearchBar from "../components/search/search-bar.js";
+import History from "../components/history.js";
+import SearchBar from "../components/search-bar.js";
 
 const SearchResult = () => {
   const [keywords, setKeywords] = useState(
