@@ -94,29 +94,46 @@ def hello_pybo():
 @app.route('/api/v1/search', methods=["GET"])
 def searchAPI():
     order = request.args.get('q')
-    docs = es.search(
-        index='flower_idx',
-        body={
-            "query": {
-                "multi_match": {
-                    "query": order,
-                    "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
-                }
-            }
-        }
-    )
+    # docs = es.search(
+    #     index='flower_idx',
+    #     body={
+    #         "query": {
+    #             "multi_match": {
+    #                 "query": order,
+    #                 "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
+    #             }
+    #         }
+    #     }
+    # )
     return_dict = {}
     obj = []
-    data_list = docs['hits']
-    for hit in data_list['hits']:
-        obj.append(
-            {
-                "id": hit["_source"]["id"]
-            }
-        )
+    # data_list = docs['hits']
+    # for hit in data_list['hits']:
+    #     obj.append(
+    #         {
+    #             "id": hit["_source"]["id"]
+    #         }
+    #     )
+
+    obj = [
+        {
+            "name": "6204e11b4ca120dbd68abd08",
+            "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/aaron-burden-wes5JqFptkQ-unsplash.jpg",
+        },
+        {
+            "name": "6204e11b4ca120dbd68abd08",
+            "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/annie-spratt-4wz1YsANFB0-unsplash.jpg",
+        },
+        {
+            "name": "6204e11b4ca120dbd68abd08",
+            "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/edward-howell-dZ3YRMco4XU-unsplash.jpg",
+        }
+    ]
+
     return_dict = {
-        "idList": obj
+        "result_list": obj
     }
+
     return return_dict
 
 
