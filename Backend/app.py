@@ -12,16 +12,11 @@ from bson.json_util import dumps, loads
 from bson import json_util
 import redis
 from random import random
-from flask_restx import Resource, Api, Namespace
+from flask_restx import Resource, Api, Namespace, fields
 
 
 app = Flask(__name__)
 CORS(app)
-
-api = Api(app)
-
-find = Namespace('Search')
-api.add_namespace(find,'/api')
 
 
 es = Elasticsearch(
@@ -59,6 +54,29 @@ doc = myinform.find()
 # corsur to json
 json_data = dumps(list(doc))
 
+# swagger 설정 ------------
+api = Api(
+    app,
+    version='1.0',
+    title="JustKode's API Server",
+    description="JustKode's Todo API Server!",
+    terms_url="/",
+    contact="justkode@kakao.com",
+    license="MIT"
+)
+
+find = Namespace('Search',description='어떤 식물인지 찾기 위한 api')
+api.add_namespace(find,'/api')
+
+todo_fields = find.model('Todo', {  # Model 객체 생성
+    'data': fields.String(description='a Todo', required=True, example="what to do")
+})
+
+todo_fields_with_id = find.inherit('Todo With ID', todo_fields, {  # todo_fields 상속 받음
+    'todo_id': fields.Integer(description='a Todo ID')
+}) 
+
+# -----------------------
 
 def get_hit_count():
     time.sleep(random() * 0.5)
@@ -74,8 +92,12 @@ def get_hit_count():
 
 
 @find.route('/', methods=['GET'])
+@find.doc(params={'get_hit_count': '맞는 갯수'})  #객체를 받으며, 키로는 파라미터 변수명, 값으로는 설명을 적을 수 있습니다.
 class Hello(Resource):
+    @find.doc(responses={202: 'Success'})   # 객체를 받으며, 키로는 Status Code, 값으로는 설멍을 적을 수 있습니다.
+    @find.doc(responses={500: 'Failed'})    # 에러 코드는 delete의 값  get에 맞는 걸로 바꿔야함
     def get(self):
+        """"api에 대한 설명은 여기에~~~"""
         count = get_hit_count()
         return 'Flask in a Docker!!! Hello World! I have been seen {} times.\n'.format(count)
 
@@ -99,7 +121,10 @@ def hello_pybo():
 
 
 @find.route('/v1/search', methods=["GET"])
+@find.doc(params={'get_hit_count': '맞는 갯수'}) 
 class searchAPI(Resource):
+    @find.doc(responses={202: 'Success'})
+    @find.doc(responses={500: 'Failed'})
     def get():
         order = request.args.get('q')
         docs = es.search(
@@ -132,7 +157,10 @@ class searchAPI(Resource):
 
 
 @find.route('/v1/analyze', methods=["GET"])
+@find.doc(params={'get_hit_count': '맞는 갯수'}) 
 class analyze(Resource):
+    @find.doc(responses={202: 'Success'})
+    @find.doc(responses={500: 'Failed'})
     def get():
         db_data = myurl.find_one(
             ObjectId(request.args.get('id'))
@@ -161,7 +189,10 @@ class analyze(Resource):
 
 
 @find.route('/v1/upload', methods=["POST"])
+@find.doc(params={'upload_files': '사진 파일'})
 class uploadFile(Resource):
+    @find.expect(todo_fields)
+    @find.response(201, 'Success', todo_fields_with_id)
     def post():
 
         file = request.files['upload_files']
@@ -190,7 +221,10 @@ class uploadFile(Resource):
 
 
 @find.route('/v1/search/details', methods=["GET"])
+@find.doc(params={'upload_files': '사진 파일'})
 class respone_data(Resource):
+    @find.doc(responses={202: 'Success'})
+    @find.doc(responses={500: 'Failed'})
     def get():
         json_information = json.loads(
             json_util.dumps(
