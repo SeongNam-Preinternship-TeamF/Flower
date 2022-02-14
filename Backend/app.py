@@ -4,11 +4,14 @@ import pymongo
 from bson.objectid import ObjectId
 import boto3
 import os
+import time
 import json
 from elasticsearch import Elasticsearch, helpers
 from flask_cors import CORS, cross_origin
 from bson.json_util import dumps, loads
 from bson import json_util
+import redis
+from random import random
 
 
 app = Flask(__name__)
@@ -18,6 +21,8 @@ es = Elasticsearch(
     hosts=['http://elasticsearch:9200'],
     http_auth=('elastic', 'changeme')
 )
+
+cache = redis.Redis(host='redis', port=6379)
 
 mongo_info = os.environ['mondb_URI']
 
@@ -46,6 +51,26 @@ doc = myinform.find()
 
 # corsur to json
 json_data = dumps(list(doc))
+
+
+def get_hit_count():
+    time.sleep(random() * 0.5)
+    retries = 5
+    while True:
+        try:
+            return cache.incr('hits')
+        except redis.exceptions.ConnectionError as exc:
+            if retries == 0:
+                raise exc
+            retries -= 1
+            time.sleep(0.5)
+
+
+@app.route('/', methods=['GET'])
+# @common_counter
+def hello():
+    count = get_hit_count()
+    return 'Flask in a Docker!!! Hello World! I have been seen {} times.\n'.format(count)
 
 
 @app.route('/api/v1/initialize')
@@ -94,22 +119,36 @@ def searchAPI():
     }
     return return_dict
 
+
 # on development
 
 
 @app.route('/api/v1/analyze', methods=["GET"])
 def analyze():
-    order = request.args.get('id')
-    return_dict = {
-        "id": order,
-        "name": "꽃 이름",
-        "flowerMeaning": "꽃 말",
-        "water": "물주기",
-        "caution": "주의사항",
-        "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/aaron-burden-wes5JqFptkQ-unsplash.jpg",
-        "sunlight": "일조량"
-    }
-    return return_dict
+    db_data = myurl.find_one(
+        ObjectId(request.args.get('id'))
+    )
+    # ObjectId to json
+    result = json.loads(
+        json_util.dumps(db_data)
+    )
+    req = result["URL"]
+    #############################################
+    # request to AI server + 서버 분리
+    #############################################
+    analysis = myinform.find_one({"name": "장미"})
+
+    result = json.loads(
+        json_util.dumps(analysis)
+    )
+    result.update(
+        {
+            "id": result["_id"]["$oid"]
+        }
+    )
+    del(result['_id'])
+
+    return result
 
 
 @app.route('/api/v1/upload', methods=["POST"])
@@ -140,14 +179,24 @@ def uploadFile():
     return {"id": str(result.inserted_id)}
 
 
-@app.route('/api/v1/result', methods=["GET"])
+@app.route('/api/v1/search/details', methods=["GET"])
 def respone_data():
-    id = request.form['id']
-    # print(id)
-    information = myinform.find_one({"_id": ObjectId(id)})
-    print("검색한거 타입", type(information))
-    json_information = json.loads(json_util.dumps(information))
+    json_information = json.loads(
+        json_util.dumps(
+            myinform.find_one(
+                ObjectId(
+                    request.args.get('id')
+                )
+            )
+        )
+    )
+    json_information.update(
+        {
+            "id": json_information["_id"]["$oid"]
+        }
+    )
     del(json_information['_id'])
+
     return json_information
 
 
