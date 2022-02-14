@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, Blueprint
 from werkzeug.utils import secure_filename
 import pymongo
+import requests
 from bson.objectid import ObjectId
 import boto3
 import os
@@ -27,6 +28,8 @@ es = Elasticsearch(
 cache = redis.Redis(host='redis', port=6379)
 
 mongo_info = os.environ['mondb_URI']
+model_IP = os.environ['model_server_IP']
+
 
 app.config['FLASKS3_BUCKET_NAME'] = 'team-flower'
 app.config['UPLOAD_FOLDER'] = "/backend/Images"
@@ -65,19 +68,20 @@ api = Api(
     license="MIT"
 )
 
-find = Namespace('Search',description='식물 키우기를 도와주는 웹사이트')
-api.add_namespace(find,'/api')
+find = Namespace('Search', description='식물 키우기를 도와주는 웹사이트')
+api.add_namespace(find, '/api')
 
-    #post 메소드에 들어가는 내용
+# post 메소드에 들어가는 내용
 img_uploaded = find.model('Todo', {  # Model 객체 생성
     'data': fields.String(description='사진을 업로드 받음', required=True, example="what to do")
 })
 
-img_uridb_id = find.inherit('Todo With ID',{  # todo_fields 상속 받음
+img_uridb_id = find.inherit('Todo With ID', {  # todo_fields 상속 받음
     'todo_id': fields.String(description='업로드 받은 이미지를 s3에 저장, 그 s3의 uri를 저장한 db의 id')
-}) 
+})
 
 # -----------------------
+
 
 def get_hit_count():
     time.sleep(random() * 0.5)
@@ -93,9 +97,11 @@ def get_hit_count():
 
 
 @find.route('/', methods=['GET'])
-@find.doc(params={'count': '일치하는 갯수'})  #객체를 받으며, 키로는 파라미터 변수명, 값으로는 설명을 적을 수 있습니다.
+# 객체를 받으며, 키로는 파라미터 변수명, 값으로는 설명을 적을 수 있습니다.
+@find.doc(params={'count': '일치하는 갯수'})
 class Hello(Resource):
-    @find.doc(responses={202: 'Success'})   # 객체를 받으며, 키로는 Status Code, 값으로는 설멍을 적을 수 있습니다.
+    # 객체를 받으며, 키로는 Status Code, 값으로는 설멍을 적을 수 있습니다.
+    @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})    # 에러 코드는 delete의 값  get에 맞는 걸로 바꿔야함
     # @common_counter
     def get(self):
@@ -123,48 +129,34 @@ def hello_pybo():
 
 
 @find.route('/v1/search', methods=["GET"])
-@find.doc(params={'q': '검색어'}) 
+@find.doc(params={'q': '검색어'})
 class searchAPI(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
-    def searchAPI():
+    def get(self):
         """"검색어를 받아와 elasticsearch를 통해 일치하는 내용이 있는 모든 documents 를 반환해주는 api"""
         order = request.args.get('q')
-        # docs = es.search(
-        #     index='flower_idx',
-        #     body={
-        #         "query": {
-        #             "multi_match": {
-        #                 "query": order,
-        #                 "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
-        #             }
-        #         }
-        #     }
-        # )
+        docs = es.search(
+            index='flower_idx',
+            body={
+                "query": {
+                    "multi_match": {
+                        "query": order,
+                        "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
+                    }
+                }
+            }
+        )
         return_dict = {}
         obj = []
-        # data_list = docs['hits']
-        # for hit in data_list['hits']:
-        #     obj.append(
-        #         {
-        #             "id": hit["_source"]["id"]
-        #         }
-        #     )
-
-        obj = [
-            {
-                "name": "6204e11b4ca120dbd68abd08",
-                "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/aaron-burden-wes5JqFptkQ-unsplash.jpg",
-            },
-            {
-                "name": "6204e11b4ca120dbd68abd08",
-                "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/annie-spratt-4wz1YsANFB0-unsplash.jpg",
-            },
-            {
-                "name": "6204e11b4ca120dbd68abd08",
-                "imgURL": "https://team-flower.s3.ap-northeast-2.amazonaws.com/root_directory/edward-howell-dZ3YRMco4XU-unsplash.jpg",
-            }
-        ]
+        data_list = docs['hits']
+        for hit in data_list['hits']:
+            obj.append(
+                {
+                    "name": hit["_source"]["name"],
+                    "imgURL": hit["_source"]["URL"]
+                }
+            )
 
         return_dict = {
             "result_list": obj
@@ -177,24 +169,43 @@ class searchAPI(Resource):
 
 
 @find.route('/v1/analyze', methods=["GET"])
-@find.doc(params={'id': 'img가 저장된 uri'}) 
+@find.doc(params={'id': 'db에 저장된 이미지의 id'})
 class analyze(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
     def get(self):
         """"img의 uri가 저장된 db의 id값을 ai서버에 보내 결과의 정보가 저장된 db의 id를 받아오는 api"""
-        db_data = myurl.find_one(
-            ObjectId(request.args.get('id'))
-        )
-        # ObjectId to json
-        result = json.loads(
-            json_util.dumps(db_data)
-        )
-        req = result["URL"]
+
         #############################################
         # request to AI server + 서버 분리
+        params = {
+            'id': request.args.get('id')
+        }
+        res_result = requests.get(
+            "http://{}:5000/api/v1/predict".format(model_IP), params=params, verify=False).json()
+
         #############################################
-        analysis = myinform.find_one({"name": "장미"})
+
+        if res_result["Predicted_label"] == 'Rose':
+            sort = "장미"
+
+        if res_result["Predicted_label"] == 'Dandelion':
+            sort = "민들레"
+
+        if res_result["Predicted_label"] == 'Tulip':
+            sort = "튤립"
+
+        if res_result["Predicted_label"] == 'Sunflower':
+            sort = "해바라기"
+
+        if res_result["Predicted_label"] == 'Daisy':
+            sort = "데이지"
+
+        analysis = myinform.find_one(
+            {
+                "name": sort
+            }
+        )
 
         result = json.loads(
             json_util.dumps(analysis)
