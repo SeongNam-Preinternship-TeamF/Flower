@@ -5,8 +5,11 @@ import "../css/Result.css";
 import SearchBox from "./SearchBox";
 import History from "../components/history.js";
 import SearchBar from "../components/search-bar.js";
+import { useNavigate } from "react-router-dom";
 
 const SearchResult = () => {
+  const navigate = useNavigate();
+  const [id, setId] = useState("");
   const [keywords, setKeywords] = useState(
     JSON.parse(localStorage.getItem("keywords") || "[]")
   );
@@ -37,19 +40,24 @@ const SearchResult = () => {
   const [searchInfo, setSearchInfo] = useState({
     idList: [
       {
-        id: "",
+        name: "",
+        imgURL: "",
       },
       {
-        id: "",
+        name: "",
+        imgURL: "",
       },
       {
-        id: "",
+        name: "",
+        imgURL: "",
       },
       {
-        id: "",
+        name: "",
+        imgURL: "",
       },
       {
-        id: "",
+        name: "",
+        imgURL: "",
       },
     ],
   });
@@ -77,11 +85,31 @@ const SearchResult = () => {
         onRemoveKeyword={handleRemoveKeyword}
       />
       <div className="flex flex-wrap justify-center">
-        <SearchBox content={searchInfo.imgURL} title={searchInfo.id} />
-        <SearchBox content={searchInfo.imgURL} title={searchInfo.id} />
-        <SearchBox content={searchInfo.imgURL} title={searchInfo.id} />
-        <SearchBox content={searchInfo.imgURL} title={searchInfo.id} />
-        <SearchBox content={searchInfo.imgURL} title={searchInfo.id} />
+        <SearchBox
+          content={searchInfo.imgURL}
+          title={searchInfo.name}
+          onClick={() => navigate(`/result/${id}`)}
+        />
+        <SearchBox
+          content={searchInfo.imgURL}
+          title={searchInfo.name}
+          onClick={() => navigate(`/result/${id}`)}
+        />
+        <SearchBox
+          content={searchInfo.imgURL}
+          title={searchInfo.name}
+          onClick={() => navigate(`/result/${id}`)}
+        />
+        <SearchBox
+          content={searchInfo.imgURL}
+          title={searchInfo.name}
+          onClick={() => navigate(`/result/${id}`)}
+        />
+        <SearchBox
+          content={searchInfo.imgURL}
+          title={searchInfo.name}
+          onClick={() => navigate(`/result/${id}`)}
+        />
       </div>
     </div>
   );

@@ -17,6 +17,7 @@ const Container = styled.div`
   background-color: #ffffff;
   padding: 15px 50px;
   box-sizing: border-box;
+  margin-top: 0px;
 `;
 
 //Link태그의 스타일을 입히는거임(페이지이동하는 버튼)
@@ -74,7 +75,7 @@ const Input = styled.input`
   width: 100%;
   background-color: #fff;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 16px;
   box-sizing: border-box;
 
   ${({ active }) =>
@@ -136,7 +137,7 @@ function SearchBar({ onAddKeyword }) {
 
   return (
     <div className="w-50 mx-auto">
-      <Container className="rounded-full">
+      <Container className="rounded-full h-12">
         <ArrowIcon to="/" />
         <InputContainer>
           <Input
