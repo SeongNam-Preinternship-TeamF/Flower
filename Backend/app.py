@@ -65,7 +65,7 @@ api = Api(
     license="MIT"
 )
 
-find = Namespace('Search',description='어떤 식물인지 찾기 위한 api')
+find = Namespace('Search',description='식물 키우기를 도와주는 웹사이트')
 api.add_namespace(find,'/api')
 
     #post 메소드에 들어가는 내용
@@ -98,7 +98,7 @@ class Hello(Resource):
     @find.doc(responses={202: 'Success'})   # 객체를 받으며, 키로는 Status Code, 값으로는 설멍을 적을 수 있습니다.
     @find.doc(responses={500: 'Failed'})    # 에러 코드는 delete의 값  get에 맞는 걸로 바꿔야함
     def get(self):
-        """"api에 대한 설명은 여기에~~~"""
+        """"이 api는 어떤건지 잘 모르겠습니다"""
         count = get_hit_count()
         return 'Flask in a Docker!!! Hello World! I have been seen {} times.\n'.format(count)
 
@@ -127,6 +127,7 @@ class searchAPI(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
     def get(self):
+        """"검색어를 받아와 elasticsearch를 통해 일치하는 내용이 있는 모든 documents 를 반환해주는 api"""
         order = request.args.get('q')
         docs = es.search(
             index='flower_idx',
@@ -163,6 +164,7 @@ class analyze(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
     def get(self):
+        """"img의 uri가 저장된 db의 id값을 ai서버에 보내 결과의 정보가 저장된 db의 id를 받아오는 api"""
         db_data = myurl.find_one(
             ObjectId(request.args.get('id'))
         )
@@ -195,6 +197,7 @@ class uploadFile(Resource):
     @find.expect(img_uploaded)
     @find.response(201, 'Success', img_uridb_id)
     def post(self):
+        """"frontend로 부터 업로드된 사진파일을 받아와 파일이 저장된 uri가 포함된 db의 id를 반환해주는 api"""
 
         file = request.files['upload_files']
         # 한글 이름의 파일 입력시 validation이 안되는 문제가 존재
@@ -227,6 +230,7 @@ class respone_data(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
     def get(self):
+        """"db의 id를 받아와 해당 id를 가진 document가 가진 정보를 반환해주는 api"""
         json_information = json.loads(
             json_util.dumps(
                 myinform.find_one(
