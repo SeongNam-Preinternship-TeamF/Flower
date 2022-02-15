@@ -131,7 +131,7 @@ def hello_pybo():
             }
         )
 
-    with open('test.json', 'w') as outfile:
+    with open('dataset.json', 'w') as outfile:
         json.dump(data, outfile,indent=7,ensure_ascii=False)
     
     if es.indices.exists(index=index):
@@ -139,11 +139,11 @@ def hello_pybo():
 
     es.indices.create(index=index, body=mapping)    
 
-    with open("test.json", encoding='utf-8') as json_file:
+    with open("dataset.json", encoding='utf-8') as json_file:
         json_data = json.loads(json_file.read())
 
     helpers.bulk(es, json_data, index=index)
-
+    os.remove('dataset.json')  #dataset.json 을 만들어 elastic에 넣은 후 다시 삭제
     return 'Hello, Pybo!'
 
 
@@ -161,7 +161,7 @@ class searchAPI(Resource):
                 "query": {
                     "multi_match": {
                         "query": order,
-                        "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
+                        "fields": ["name", "flower_meaning", "water", "sunshine", "caution"]
                     }
                 }
             }
