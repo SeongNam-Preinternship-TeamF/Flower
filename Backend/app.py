@@ -118,9 +118,28 @@ def hello_pybo():
 
     index = "flower_idx"
 
-    es.indices.create(index=index, body=mapping)
+    data = []
+    for doc in myinform.find({},{"_id": 0}):
+        data.append(
+            {
+                "name":doc["name"],
+                "flower_meaning":doc["flower_meaning"],
+                "water": doc["water"],
+                "caution": doc["caution"],
+                "sunshine": doc["sunshine"],
+                "URL": doc["imgURL"]
+            }
+        )
 
-    with open("local_dict.json", encoding='utf-8') as json_file:
+    with open('test.json', 'w') as outfile:
+        json.dump(data, outfile,indent=7,ensure_ascii=False)
+    
+    if es.indices.exists(index=index):
+        es.indices.delete(index=index)
+
+    es.indices.create(index=index, body=mapping)    
+
+    with open("test.json", encoding='utf-8') as json_file:
         json_data = json.loads(json_file.read())
 
     helpers.bulk(es, json_data, index=index)
