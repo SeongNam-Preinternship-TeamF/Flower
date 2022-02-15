@@ -67,28 +67,28 @@ const SearchResult = () => {
             key={index}
             content={imgURL}
             title={name}
-            onClick={() => navigate(`/result/${id}`)}
+            onClick={() => navigate(`/detail/${id}`)}
           />
         ))}
         <SearchBox
           content={searchInfo.imgURL}
           title={searchInfo.name}
-          onClick={() => navigate(`/result/${id}`)}
+          onClick={() => navigate(`/detail/${id}`)}
         />
         <SearchBox
           content={searchInfo.imgURL}
           title={searchInfo.name}
-          onClick={() => navigate(`/result/${id}`)}
+          onClick={() => navigate(`/detail/${id}`)}
         />
         <SearchBox
           content={searchInfo.imgURL}
           title={searchInfo.name}
-          onClick={() => navigate(`/result/${id}`)}
+          onClick={() => navigate(`/detail/${id}`)}
         />
         <SearchBox
           content={searchInfo.imgURL}
           title={searchInfo.name}
-          onClick={() => navigate(`/result/${id}`)}
+          onClick={() => navigate(`/detail/${id}`)}
         />
       </div>
     </div>
