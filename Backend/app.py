@@ -123,11 +123,11 @@ def hello_pybo():
         data.append(
             {
                 "name":doc["name"],
-                "flower_meaning":doc["flower_meaning"],
+                "flowerMeaning":doc["flowerMeaning"],
                 "water": doc["water"],
                 "caution": doc["caution"],
-                "sunshine": doc["sunshine"],
-                "URL": doc["imgURL"]
+                "sunlight": doc["sunlight"],
+                "imgURL": doc["imgURL"]
             }
         )
 
@@ -148,13 +148,13 @@ def hello_pybo():
 
 
 @find.route('/v1/search', methods=["GET"])
-@find.doc(params={'q': '검색어'})
+@find.doc(params={'text': '검색어'})
 class searchAPI(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
     def get(self):
         """"검색어를 받아와 elasticsearch를 통해 일치하는 내용이 있는 모든 documents 를 반환해주는 api"""
-        order = request.args.get('q')
+        order = request.args.get('text')
         docs = es.search(
             index='flower_idx',
             body={

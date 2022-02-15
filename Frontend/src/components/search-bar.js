@@ -115,7 +115,7 @@ function SearchBar({ onAddKeyword }) {
   const hasKeyword = !!text;
 
   return (
-    <div className="w-50 mx-auto">
+    <div className="w-50 mx-auto mt-8">
       <Container className="rounded-full h-12">
         <ArrowIcon to="/" />
         <InputContainer>
