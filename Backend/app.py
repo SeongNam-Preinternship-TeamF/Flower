@@ -112,27 +112,28 @@ def hello_pybo():
 
     index = "flower_idx"
 
-    # db_cur = list(myinform.find())
-    # call_data = json_util.dumps(myinform.find())
-    # print(type(call_data))
-    # print(call_data)
+    data = []
+    for doc in myinform.find({},{"_id": 0}):
+        data.append(
+            {
+                "name":doc["name"],
+                "flower_meaning":doc["flower_meaning"],
+                "water": doc["water"],
+                "caution": doc["caution"],
+                "sunshine": doc["sunshine"],
+                "URL": doc["imgURL"]
+            }
+        )
 
-    # data = {}
-    # data['posts'] = []
-    # for i in myinform.find():
-    #     del(i['_id'])
-    #     data['posts'].append(i)
-
-
-    # with open('sample.json', 'w') as outfile:
-    #     json.dump(data, outfile,indent=7,ensure_ascii=False)
+    with open('test.json', 'w') as outfile:
+        json.dump(data, outfile,indent=7,ensure_ascii=False)
     
     if es.indices.exists(index=index):
         es.indices.delete(index=index)
 
     es.indices.create(index=index, body=mapping)    
 
-    with open("sample.json", encoding='utf-8') as json_file:
+    with open("test.json", encoding='utf-8') as json_file:
         json_data = json.loads(json_file.read())
 
     helpers.bulk(es, json_data, index=index)
@@ -148,26 +149,26 @@ class searchAPI(Resource):
     def get(self):
         """"검색어를 받아와 elasticsearch를 통해 일치하는 내용이 있는 모든 documents 를 반환해주는 api"""
         order = request.args.get('q')
-        # docs = es.search(
-        #     index='flower_idx',
-        #     body={
-        #         "query": {
-        #             "multi_match": {
-        #                 "query": order,
-        #                 "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
-        #             }
-        #         }
-        #     }
-        # )
+        docs = es.search(
+            index='flower_idx',
+            body={
+                "query": {
+                    "multi_match": {
+                        "query": order,
+                        "fields": ["name", "flowerMeaning", "water", "sunshine", "caution"]
+                    }
+                }
+            }
+        )
         return_dict = {}
         obj = []
-        # data_list = docs['hits']
-        # for hit in data_list['hits']:
-        #     obj.append(
-        #         {
-        #             "id": hit["_source"]["id"]
-        #         }
-        #     )
+        data_list = docs['hits']
+        for hit in data_list['hits']:
+            obj.append(
+                {
+                    "id": hit["_source"]["id"]
+                }
+            )
 
         obj = [
             {
