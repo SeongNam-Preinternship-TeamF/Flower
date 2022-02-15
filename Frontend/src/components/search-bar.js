@@ -17,6 +17,7 @@ const Container = styled.div`
   background-color: #ffffff;
   padding: 15px 50px;
   box-sizing: border-box;
+  margin-top: 0px;
 `;
 
 //Link태그의 스타일을 입히는거임(페이지이동하는 버튼)
@@ -74,7 +75,7 @@ const Input = styled.input`
   width: 100%;
   background-color: #fff;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 16px;
   box-sizing: border-box;
 
   ${({ active }) =>
@@ -92,22 +93,6 @@ function SearchBar({ onAddKeyword }) {
   //form을 관련 요소를 다룰때는 2-way 데이터 바인딩을 해줍니다! (input 의 value에 state를 넣는 것)
   const [text, setText] = useState("");
   const navigate = useNavigate();
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    const data = {
-      text: text,
-    };
-    await axios
-      .get("http://localhost/api/v1/search?q=" + text, data)
-      .then((response) => {
-        console.log(response);
-        setText(response.data.id);
-      })
-      .catch((error) => {
-        alert("다시 검색해주세요");
-      });
-  };
 
   const handleKeyword = (e) => {
     setText(e.target.value);
@@ -129,14 +114,9 @@ function SearchBar({ onAddKeyword }) {
   //키워드를 가지고 있다면 active가 발생하여 padding이 발생함. // 패딩이 없으면 x 아이콘까지 글자가 침법하기 때문
   const hasKeyword = !!text;
 
-  {
-    //keyword가 있으면 true, 없으면 false가 리턴이 되는 것을 확인 할 수 있습니다
-    console.log(!!text);
-  }
-
   return (
     <div className="w-50 mx-auto">
-      <Container className="rounded-full">
+      <Container className="rounded-full h-12">
         <ArrowIcon to="/" />
         <InputContainer>
           <Input

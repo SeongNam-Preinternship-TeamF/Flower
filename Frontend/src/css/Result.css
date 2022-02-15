@@ -16,7 +16,8 @@
   height: 20rem;
 }
 .backimage {
-  background-image: url("../images/Flower.png");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+    url("../images/Flower.png");
   background-repeat: cover;
-  height: 63rem;
+  height: 60rem;
 }
