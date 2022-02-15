@@ -45,11 +45,8 @@ function SearchPage() {
   return (
     <div className="relative">
       <div className="backimage bg-cover ">
-        <div>
-          <SearchBar
-            calssName="mt-80"
-            onAddKeyword={handleAddKeyword}
-          ></SearchBar>
+        <div className="pt-96">
+          <SearchBar onAddKeyword={handleAddKeyword}></SearchBar>
           <History
             keywords={keywords}
             onClearKeywords={handleClearKeywords}
