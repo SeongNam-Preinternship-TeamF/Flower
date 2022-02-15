@@ -123,11 +123,11 @@ def hello_pybo():
         data.append(
             {
                 "name":doc["name"],
-                "flower_meaning":doc["flower_meaning"],
+                "flowerMeaning":doc["flowerMeaning"],
                 "water": doc["water"],
                 "caution": doc["caution"],
-                "sunshine": doc["sunshine"],
-                "URL": doc["imgURL"]
+                "sunlight": doc["sunlight"],
+                "imgURL": doc["imgURL"]
             }
         )
 
@@ -148,7 +148,7 @@ def hello_pybo():
 
 
 @find.route('/v1/search', methods=["GET"])
-@find.doc(params={'q': '검색어'})
+@find.doc(params={'text': '검색어'})
 class searchAPI(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
