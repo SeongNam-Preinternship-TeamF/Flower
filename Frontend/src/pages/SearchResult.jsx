@@ -45,7 +45,7 @@ const SearchResult = () => {
 
   const onSubmit = (text) => {
     axios
-      .get(`http://localhost:5001/api/v1/search?q=${text}`)
+      .get(`http://localhost:5001/api/v1/search?text=${text}`)
       .then((response) => {
         console.log(response);
         setSearchInfo(response.data.idList);

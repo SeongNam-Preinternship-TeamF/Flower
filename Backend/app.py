@@ -110,41 +110,40 @@ class Hello(Resource):
         return 'Flask in a Docker!!! Hello World! I have been seen {} times.\n'.format(count)
 
 
-@app.route('/api/v1/initialize')
-def hello_pybo():
+class initialize:
+    def __init__(self):
 
-    with open('mapping.json', 'r') as f:
-        mapping = json.load(f)
+        with open('mapping.json', 'r') as f:
+            mapping = json.load(f)
 
-    index = "flower_idx"
+        index = "flower_idx"
 
-    data = []
-    for doc in myinform.find({},{"_id": 0}):
-        data.append(
-            {
-                "name":doc["name"],
-                "flowerMeaning":doc["flowerMeaning"],
-                "water": doc["water"],
-                "caution": doc["caution"],
-                "sunlight": doc["sunlight"],
-                "imgURL": doc["imgURL"]
-            }
-        )
+        data = []
+        for doc in myinform.find({},{"_id": 0}):
+            data.append(
+                {
+                    "name":doc["name"],
+                    "flowerMeaning":doc["flowerMeaning"],
+                    "water": doc["water"],
+                    "caution": doc["caution"],
+                    "sunlight": doc["sunlight"],
+                    "imgURL": doc["imgURL"]
+                }
+            )
 
-    with open('dataset.json', 'w') as outfile:
-        json.dump(data, outfile,indent=7,ensure_ascii=False)
-    
-    if es.indices.exists(index=index):
-        es.indices.delete(index=index)
+        with open('dataset.json', 'w') as outfile:
+            json.dump(data, outfile,indent=7,ensure_ascii=False)
+        
+        if es.indices.exists(index=index):
+            es.indices.delete(index=index)
 
-    es.indices.create(index=index, body=mapping)    
+        es.indices.create(index=index, body=mapping)    
 
-    with open("dataset.json", encoding='utf-8') as json_file:
-        json_data = json.loads(json_file.read())
+        with open("dataset.json", encoding='utf-8') as json_file:
+            json_data = json.loads(json_file.read())
 
-    helpers.bulk(es, json_data, index=index)
-    os.remove('dataset.json')  #dataset.json 을 만들어 elastic에 넣은 후 다시 삭제
-    return 'Hello, Pybo!'
+        helpers.bulk(es, json_data, index=index)
+        os.remove('dataset.json')  #dataset.json 을 만들어 elastic에 넣은 후 다시 삭제
 
 
 @find.route('/v1/search', methods=["GET"])
@@ -170,13 +169,17 @@ class searchAPI(Resource):
         obj = []
         data_list = docs['hits']
         for hit in data_list['hits']:
+            #hit에서 name을 뽑아와서 그걸로 다시 검색->id 심어줌
+            hit_name = hit["_source"]["name"]
+            hit_id = myinform.find_one({"name":hit_name})
             obj.append(
                 {
+
                     "name": hit["_source"]["name"],
-                    "imgURL": hit["_source"]["URL"]
+                    "imgURL": hit["_source"]["imgURL"],
+                    "id": str(hit_id["_id"])
                 }
             )
-
         return_dict = {
             "result_list": obj
         }
