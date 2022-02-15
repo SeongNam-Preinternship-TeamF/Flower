@@ -13,7 +13,7 @@ const horizontalCenter = css`
 const Container = styled.div`
   position: relative;
   width: 100%;
-  border-bottom: 2px solid #dd6d22;
+  border: 2px solid #dd6d22;
   background-color: #ffffff;
   padding: 15px 50px;
   box-sizing: border-box;
@@ -65,6 +65,7 @@ const RemoveIcon = styled.span`
   background-image: url(https://s.pstatic.net/static/www/m/uit/2020/sp_search.623c21.png);
   background-size: 467px 442px;
   background-repeat: no-repeat;
+  top: 8px;
 `;
 
 const InputContainer = styled.div`
@@ -77,12 +78,14 @@ const Input = styled.input`
   font-weight: 700;
   font-size: 16px;
   box-sizing: border-box;
+  position: relative;
+  top: -4px;
 
   ${({ active }) =>
     active &&
     `
     padding-right: 25px; 
-  `}
+  `};
 `;
 
 function SearchBar({ onAddKeyword }) {

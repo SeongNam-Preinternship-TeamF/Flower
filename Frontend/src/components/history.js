@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 
-// const HistoryContainer = styled.div`
-//   padding: 18px;
-// `;
+const HistoryContainer = styled.div`
+  padding: 18px;
+`;
 const HeaderContainer = styled.div`
   overflow: hidden;
 `;
@@ -54,6 +54,7 @@ function History({ keywords, onRemoveKeyword, onClearKeywords }) {
       </div>
     );
   }
+
   return (
     <div className="w-50 mx-auto">
       <div>
