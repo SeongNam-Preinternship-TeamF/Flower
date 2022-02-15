@@ -28,7 +28,6 @@ const Result = () => {
       .then((response) => {
         console.log(response);
         setFlowerInfo(response.data);
-        alert("이미지 로딩 완료");
       })
       .catch((error) => {
         alert("이미지 로딩 실패");
