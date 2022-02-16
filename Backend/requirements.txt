@@ -27,3 +27,4 @@ urllib3==1.26.8
 Werkzeug==2.0.2
 wrapt==1.13.3
 flask-restx==0.5.1
+prometheus-flask-exporter

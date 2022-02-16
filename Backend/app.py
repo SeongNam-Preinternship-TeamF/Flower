@@ -19,7 +19,18 @@ from flask_restx import Resource, Api, Namespace, fields
 app = Flask(__name__)
 CORS(app)
 
+# Prometheus 설정 ------------
+metrics = PrometheusMetrics(app)
+metrics.info("flask_app_info", "App Info", version="1.0.0")
 
+
+# custom metric to be applied to multiple endpoints
+common_counter = metrics.counter(
+    'flask_by_endpoint_counter', 'Request count by endpoints',
+    labels={'endpoint': lambda: request.endpoint}
+)
+
+cache = redis.Redis(host='redis', port=6379)
 es = Elasticsearch(
     hosts=['http://elasticsearch:9200'],
     http_auth=('elastic', 'changeme')
