@@ -1,22 +1,20 @@
-import React from 'react';
-import { BallTriangle, TailSpin } from 'react-loader-spinner';
+import React from "react";
+import { BallTriangle, TailSpin } from "react-loader-spinner";
 import styled from "styled-components";
 
+function Loading() {
+  const Loading = styled.div`
+    position: relative;
+    margin-bottom: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+  `;
 
-function Loading () {
-
-    const Load = styled.div`
-        position: absolute;
-        left: 40.5vw;
-        top: 178.5vh;
-    `;
-
-    return(
-        <Load>
-            <TailSpin color="#FE5657" height={40} width={40} />
-        </Load>
-    );
+  return (
+    <Loading className="w-30 mx-auto flex">
+      <TailSpin color="#FE5657" height={30} width={30} />
+    </Loading>
+  );
 }
 
-    
 export default Loading;

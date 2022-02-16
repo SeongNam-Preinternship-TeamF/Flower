@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const horizontalCenter = css`
   position: absolute;
@@ -100,6 +99,7 @@ function SearchBar({ onAddKeyword }) {
   const handleKeyword = (e) => {
     setText(e.target.value);
   };
+
   const handleEnter = (e) => {
     if (text && e.keyCode === 13) {
       //엔터일때 부모의 addkeyword에 전달
