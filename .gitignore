@@ -67,3 +67,13 @@ pip-selfcheck.json
 /Frontend/yarn-error.log*
 
 /Frontend/package-lock.json
+
+/grafana/data
+/grafana/data/
+grafana/data
+grafana/data/
+
+/prometheus/data
+/prometheus/data/
+prometheus/data
+prometheus/data/
