@@ -2,17 +2,7 @@
 version: "3"
 
 services:
-  # db 컨테이너
-  # db:
-  #   image: postgres:12.0-alpine
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data/
-  #   env_file:
-  #     - ./settings/prod/.env.db
-  #   ports:
-  #     - 5432:5432
 
-  # Django 컨테이너
   backend:
     build:
       context: ./backend
@@ -21,16 +11,13 @@ services:
       - 5001:5000
     volumes:
       - ./Backend/:/backend/
-    # volumes:
-    #   - static_volume:/backend/staticfiles
-    #   - media_volume:/backend/mediafiles
-    #   - ./backend/:/backend/
     # expose:
     #   - 5001
     env_file:
       - ./settings/prod/.env.prod
-    # depends_on:
-    #   - db
+    depends_on:
+      - elasticsearch
+
   frontend:
     build:
       context: ./frontend
@@ -43,22 +30,22 @@ services:
       - build_folder:/frontend/build
       - ./frontend/node_modules/:/frontend/node_modules
     tty: true
-    # nginx 컨테이너(서버)
-    # nginx:
-    #   build: ./nginx
-    #   ports:
-    #     - 80:8080
-    #   volumes:
-    #     - static_volume:/backend/staticfiles
-    #     - media_volume:/backend/mediafiles
-    #     - build_folder:/var/www/frontend
-    #   depends_on:
-    #     - backend
-    #     - frontend
 
-    # 컨테이너 내려도 데이터 유지되도록 함
-    # volumes:
-    #   postgres_data: null
-  static_volume: null
-  media_volume: null
+  # nginx 컨테이너(서버)
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:8080
+    volumes:
+      # - static_volume:/backend/staticfiles
+      # - media_volume:/backend/mediafiles
+      - build_folder:/var/www/frontend
+    depends_on:
+      - backend
+      - frontend
+# 컨테이너 내려도 데이터 유지되도록 함
+volumes:
+  #   postgres_data: null
+  # static_volume: null
+  # media_volume: null
   build_folder: null
