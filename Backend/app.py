@@ -109,7 +109,6 @@ class Hello(Resource):
         count = get_hit_count()
         return 'Flask in a Docker!!! Hello World! I have been seen {} times.\n'.format(count)
 
-
 @app.route('/api/v1/initialize')
 def hello_pybo():
 
@@ -144,7 +143,7 @@ def hello_pybo():
 
     helpers.bulk(es, json_data, index=index)
     os.remove('dataset.json')  #dataset.json 을 만들어 elastic에 넣은 후 다시 삭제
-    return 'Hello, Pybo!'
+    return 'hello_pybo'
 
 
 @find.route('/v1/search', methods=["GET"])
@@ -161,7 +160,7 @@ class searchAPI(Resource):
                 "query": {
                     "multi_match": {
                         "query": order,
-                        "fields": ["name", "flower_meaning", "water", "sunshine", "caution"]
+                        "fields": ["name", "flower_meaning", "water", "sunlight", "caution"]
                     }
                 }
             }
@@ -170,16 +169,21 @@ class searchAPI(Resource):
         obj = []
         data_list = docs['hits']
         for hit in data_list['hits']:
+            #hit에서 name을 뽑아와서 그걸로 다시 검색->id 심어줌
+            hit_name = hit["_source"]["name"]
+            hit_id = myinform.find_one({"name":hit_name})
             obj.append(
                 {
+
                     "name": hit["_source"]["name"],
-                    "imgURL": hit["_source"]["URL"]
+                    "imgURL": hit["_source"]["imgURL"],
+                    "id": "6204e11b4ca120dbd68abd08"#str(hit_id["_id"]) #테스트용 임시코드
                 }
             )
-
         return_dict = {
-            "result_list": obj
+            "idList": obj
         }
+        print(return_dict)
 
         return return_dict
 

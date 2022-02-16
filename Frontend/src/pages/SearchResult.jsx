@@ -37,7 +37,8 @@ const SearchResult = () => {
   };
 
   const { searchId } = useParams();
-  const [searchInfo, setSearchInfo] = useState([]);
+  const [searchInfo, setSearchInfo] = useState();
+  const [searched, setSearched] = useState(false);
 
   useEffect(() => {
     searchId && onSubmit(searchId);
@@ -45,12 +46,15 @@ const SearchResult = () => {
 
   const onSubmit = (text) => {
     axios
-      .get(`http://localhost:5001/api/v1/search?q=${text}`)
+      .get(`http://localhost:5001/api/v1/search?text=${text}`)
       .then((response) => {
         console.log(response);
-        setSearchInfo(response.data.idList);
+        setSearchInfo(response.data);
+        setSearched(true);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -62,34 +66,36 @@ const SearchResult = () => {
         onRemoveKeyword={handleRemoveKeyword}
       />
       <div className="flex flex-wrap justify-center">
-        {searchInfo.map((name, imgURL, id, index) => (
-          <SearchBox
-            key={index}
-            content={imgURL}
-            title={name}
-            onClick={() => navigate(`/result/${id}`)}
-          />
-        ))}
-        <SearchBox
+        {searched &&
+          searchInfo?.idList?.map((props, index) => (
+            <div key={index}>
+              <SearchBox
+                content={props.imgURL}
+                title={props.name}
+                onClick={() => navigate(`/detail/${props.id}`)}
+              />
+            </div>
+          ))}
+        {/* <SearchBox
           content={searchInfo.imgURL}
           title={searchInfo.name}
-          onClick={() => navigate(`/result/${id}`)}
+          onClick={() => navigate(`/detail/${id}`)}
         />
         <SearchBox
           content={searchInfo.imgURL}
           title={searchInfo.name}
-          onClick={() => navigate(`/result/${id}`)}
+          onClick={() => navigate(`/detail/${id}`)}
         />
         <SearchBox
           content={searchInfo.imgURL}
           title={searchInfo.name}
-          onClick={() => navigate(`/result/${id}`)}
+          onClick={() => navigate(`/detail/${id}`)}
         />
         <SearchBox
           content={searchInfo.imgURL}
           title={searchInfo.name}
-          onClick={() => navigate(`/result/${id}`)}
-        />
+          onClick={() => navigate(`/detail/${id}`)}
+        /> */}
       </div>
     </div>
   );

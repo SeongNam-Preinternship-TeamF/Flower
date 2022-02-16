@@ -47,11 +47,11 @@ function SearchPage() {
       <div className="backimage bg-cover ">
         <div className="pt-96">
           <SearchBar onAddKeyword={handleAddKeyword}></SearchBar>
-          <History
+          {/* <History
             keywords={keywords}
             onClearKeywords={handleClearKeywords}
             onRemoveKeyword={handleRemoveKeyword}
-          />
+          /> */}
         </div>
       </div>
     </div>
