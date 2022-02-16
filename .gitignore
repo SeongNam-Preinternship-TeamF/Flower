@@ -69,9 +69,7 @@ pip-selfcheck.json
 /Frontend/package-lock.json
 
 # prometheus
-/prometheus/data
-/prometheus/data/
+**/prometheus/data/
 
 # grafana
-/grafana/data
-/grafana/data/
+**/grafana/data/
