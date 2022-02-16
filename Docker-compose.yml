@@ -1,5 +1,11 @@
 version: "3"
 
+networks:
+  app-tier:
+    driver: bridge
+  grafana-tier:
+    driver: bridge
+
 services:
 
   elasticsearch:
@@ -30,6 +36,8 @@ services:
       - 5001:5000
     volumes:
       - ./Backend/:/backend/
+    networks:
+      - app-tier
     env_file:
       - ./settings/dev/.env.dev
     environment:
@@ -54,6 +62,8 @@ services:
 
   redis:
     image: "redis:alpine"
+    networks:
+      - app-tier
     ports:
       - "6379:6379"
 
@@ -66,8 +76,8 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
     ports:
       - 8081:8080
-    # networks:
-    #   - app-tier
+    networks:
+      - app-tier
     restart: always
     deploy:
       mode: global
@@ -86,13 +96,13 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
     ports:
       - 9090:9090
-      # links:
-      # - cadvisor:cadvisor
-      # - alertmanager:alertmanager
+    links:
+      - cadvisor:cadvisor
+      - alertmanager:alertmanager
     depends_on:
       - cadvisor
-    # networks:
-    #   - app-tier
+    networks:
+      - app-tier
     restart: always
 
   grafana:
@@ -107,9 +117,9 @@ services:
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     env_file:
       - ./grafana/config.monitoring
-    # networks:
-    #   - app-tier
-    #   - grafana-tier
+    networks:
+      - app-tier
+      - grafana-tier
     restart: always
 
   node-exporter:
@@ -126,8 +136,23 @@ services:
     ports:
       - 9100:9100
     restart: always
+    networks:
+      - app-tier
     deploy:
       mode: global
+
+  alertmanager:
+    image: prom/alertmanager
+    ports:
+      - 9093:9093
+    volumes:
+      - ./alertmanager/:/etc/alertmanager/
+    networks:
+      - app-tier
+    restart: always
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
 
 volumes:
   elasticsearch:

@@ -14,6 +14,7 @@ from bson import json_util
 import redis
 from random import random
 from flask_restx import Resource, Api, Namespace, fields
+from prometheus_flask_exporter import PrometheusMetrics
 
 
 app = Flask(__name__)
@@ -30,6 +31,14 @@ cache = redis.Redis(host='redis', port=6379)
 mongo_info = os.environ['mondb_URI']
 model_IP = os.environ['model_server_IP']
 
+metrics = PrometheusMetrics(app)
+metrics.info("flask_app_info",
+             "App info, this can be anything you want", version="1.0.0")
+
+common_counter = metrics.counter(
+    'flask_by_endpoint_counter', 'Request count by endpoints',
+    labels={'backend': lambda: request.endpoint}
+)
 
 app.config['FLASKS3_BUCKET_NAME'] = 'team-flower'
 app.config['UPLOAD_FOLDER'] = "/backend/Images"
@@ -103,11 +112,12 @@ class Hello(Resource):
     # 객체를 받으며, 키로는 Status Code, 값으로는 설멍을 적을 수 있습니다.
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})    # 에러 코드는 delete의 값  get에 맞는 걸로 바꿔야함
-    # @common_counter
+    @common_counter
     def get(self):
         """"이 api는 어떤건지 잘 모르겠습니다"""
         count = get_hit_count()
         return 'Flask in a Docker!!! Hello World! I have been seen {} times.\n'.format(count)
+
 
 @app.route('/api/v1/initialize')
 def hello_pybo():
@@ -118,11 +128,11 @@ def hello_pybo():
     index = "flower_idx"
 
     data = []
-    for doc in myinform.find({},{"_id": 0}):
+    for doc in myinform.find({}, {"_id": 0}):
         data.append(
             {
-                "name":doc["name"],
-                "flowerMeaning":doc["flowerMeaning"],
+                "name": doc["name"],
+                "flowerMeaning": doc["flowerMeaning"],
                 "water": doc["water"],
                 "caution": doc["caution"],
                 "sunlight": doc["sunlight"],
@@ -131,18 +141,18 @@ def hello_pybo():
         )
 
     with open('dataset.json', 'w') as outfile:
-        json.dump(data, outfile,indent=7,ensure_ascii=False)
-    
+        json.dump(data, outfile, indent=7, ensure_ascii=False)
+
     if es.indices.exists(index=index):
         es.indices.delete(index=index)
 
-    es.indices.create(index=index, body=mapping)    
+    es.indices.create(index=index, body=mapping)
 
     with open("dataset.json", encoding='utf-8') as json_file:
         json_data = json.loads(json_file.read())
-
+    print(json_data)
     helpers.bulk(es, json_data, index=index)
-    os.remove('dataset.json')  #dataset.json 을 만들어 elastic에 넣은 후 다시 삭제
+    os.remove('dataset.json')  # dataset.json 을 만들어 elastic에 넣은 후 다시 삭제
     return 'hello_pybo'
 
 
@@ -151,6 +161,7 @@ def hello_pybo():
 class searchAPI(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
+    @common_counter
     def get(self):
         """"검색어를 받아와 elasticsearch를 통해 일치하는 내용이 있는 모든 documents 를 반환해주는 api"""
         order = request.args.get('text')
@@ -165,19 +176,21 @@ class searchAPI(Resource):
                 }
             }
         )
+        print()
         return_dict = {}
         obj = []
         data_list = docs['hits']
         for hit in data_list['hits']:
-            #hit에서 name을 뽑아와서 그걸로 다시 검색->id 심어줌
+            # hit에서 name을 뽑아와서 그걸로 다시 검색->id 심어줌
             hit_name = hit["_source"]["name"]
-            hit_id = myinform.find_one({"name":hit_name})
+            hit_id = myinform.find_one({"name": hit_name})
             obj.append(
                 {
 
                     "name": hit["_source"]["name"],
                     "imgURL": hit["_source"]["imgURL"],
-                    "id": "6204e11b4ca120dbd68abd08"#str(hit_id["_id"]) #테스트용 임시코드
+                    # str(hit_id["_id"]) #테스트용 임시코드
+                    "id": "6204e11b4ca120dbd68abd08"
                 }
             )
         return_dict = {
@@ -196,6 +209,7 @@ class searchAPI(Resource):
 class analyze(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
+    @common_counter
     def get(self):
         """"img의 uri가 저장된 db의 id값을 ai서버에 보내 결과의 정보가 저장된 db의 id를 받아오는 api"""
 
@@ -248,6 +262,7 @@ class analyze(Resource):
 class uploadFile(Resource):
     @find.expect(img_uploaded)
     @find.response(201, 'Success', img_uridb_id)
+    @common_counter
     def post(self):
         """"frontend로 부터 업로드된 사진파일을 받아와 파일이 저장된 uri가 포함된 db의 id를 반환해주는 api"""
 
@@ -281,6 +296,7 @@ class uploadFile(Resource):
 class respone_data(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
+    @common_counter
     def get(self):
         """"db의 id를 받아와 해당 id를 가진 document가 가진 정보를 반환해주는 api"""
         json_information = json.loads(
