@@ -36,20 +36,20 @@ const Detail = () => {
     <div className="w-full">
       <p
         className="w-full flex justify-center font-bold mt-4 text-4xl"
-        style={{ letterSpacing: "1em" }}
+        style={{ letterSpacing: "0.7em" }}
       >
         앞으로{" "}
-        <span style={{ letterSpacing: "1em", color: "#E37B7B" }}>꽃길</span>만
+        <span style={{ letterSpacing: "0.7em", color: "#dd6d22" }}>꽃길</span>만
         걷자
       </p>
       <img
-        className="w-2/4 flex justify-center mx-auto mt-8"
+        className="w-32rem flex justify-center mx-auto mt-8"
         style={{ borderRadius: "4rem" }}
         alt="flower"
         src={flowerInfo.imgURL}
       />
-      <div className="flex justify-center mt-4 font-bold text-2xl">
-        {flowerInfo.name}
+      <div className="flex justify-center mt-4 font-extrabold text-3xl text-yellow-600">
+        "{flowerInfo.name}"
       </div>
       <ResultBox title="꽃말" content={flowerInfo.flowerMeaning} />
       <ResultBox title="물주기" content={flowerInfo.water} />
