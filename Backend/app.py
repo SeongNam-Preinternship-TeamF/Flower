@@ -127,6 +127,11 @@ def hello_pybo():
 
     index = "flower_idx"
 
+    if es.indices.exists(index=index):
+        es.indices.delete(index=index)
+
+    es.indices.create(index=index, body=mapping) 
+
     data = []
     for doc in myinform.find({}, {"_id": 0}):
         data.append(
@@ -141,16 +146,11 @@ def hello_pybo():
         )
 
     with open('dataset.json', 'w') as outfile:
-        json.dump(data, outfile, indent=7, ensure_ascii=False)
-
-    if es.indices.exists(index=index):
-        es.indices.delete(index=index)
-
-    es.indices.create(index=index, body=mapping)
+        json.dump(data, outfile,indent=7, ensure_ascii=False)  
 
     with open("dataset.json", encoding='utf-8') as json_file:
         json_data = json.loads(json_file.read())
-    print(json_data)
+
     helpers.bulk(es, json_data, index=index)
     os.remove('dataset.json')  # dataset.json 을 만들어 elastic에 넣은 후 다시 삭제
     return 'hello_pybo'
@@ -171,7 +171,7 @@ class searchAPI(Resource):
                 "query": {
                     "multi_match": {
                         "query": order,
-                        "fields": ["name", "flower_meaning", "water", "sunlight", "caution"]
+                        "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
                     }
                 }
             }
@@ -189,8 +189,7 @@ class searchAPI(Resource):
 
                     "name": hit["_source"]["name"],
                     "imgURL": hit["_source"]["imgURL"],
-                    # str(hit_id["_id"]) #테스트용 임시코드
-                    "id": "6204e11b4ca120dbd68abd08"
+                    "id":  str(hit_id["_id"])
                 }
             )
         return_dict = {
