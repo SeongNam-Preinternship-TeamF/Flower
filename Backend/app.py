@@ -160,7 +160,7 @@ class searchAPI(Resource):
                 "query": {
                     "multi_match": {
                         "query": order,
-                        "fields": ["name", "flower_meaning", "water", "sunlight", "caution"]
+                        "fields": ["name", "flowerMeaning", "water", "sunlight", "caution"]
                     }
                 }
             }
@@ -177,7 +177,7 @@ class searchAPI(Resource):
 
                     "name": hit["_source"]["name"],
                     "imgURL": hit["_source"]["imgURL"],
-                    "id": "6204e11b4ca120dbd68abd08"#str(hit_id["_id"]) #테스트용 임시코드
+                    "id": str(hit_id["_id"]) #테스트용 임시코드
                 }
             )
         return_dict = {

@@ -2,8 +2,8 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../css/Result.css";
-import { constants } from "../utils/constants";
 import ResultBox from "./ResultBox";
+//import { constants } from "../utils/constants";
 
 const Result = () => {
   const { imageId } = useParams();
@@ -45,7 +45,7 @@ const Result = () => {
         style={{ letterSpacing: "1em" }}
       >
         앞으로{" "}
-        <span style={{ letterSpacing: "1em", color: "#E37B7B" }}>꽃길</span>만
+        <span style={{ letterSpacing: "1em", color: "#dd6d22" }}> 꽃길</span>만
         걷자
       </p>
       <img
@@ -54,13 +54,14 @@ const Result = () => {
         alt="flower"
         src={flowerInfo.imgURL}
       />
-      <div className="flex justify-center mt-4 font-bold text-2xl">
-        {flowerInfo.name}
+      <div className="flex justify-center mt-4 font-extrabold text-3xl text-yellow-600">
+        "{flowerInfo.name}"
       </div>
       <ResultBox title="꽃말" content={flowerInfo.flowerMeaning} />
       <ResultBox title="물주기" content={flowerInfo.water} />
       <ResultBox title="일조량" content={flowerInfo.sunlight} />
       <ResultBox title="주의 사항" content={flowerInfo.caution} />
+      <div className="mb-16"></div>
     </div>
   );
 };
