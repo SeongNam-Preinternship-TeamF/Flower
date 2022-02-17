@@ -2,17 +2,7 @@
 version: "3"
 
 services:
-  # db 컨테이너
-  # db:
-  #   image: postgres:12.0-alpine
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data/
-  #   env_file:
-  #     - ./settings/prod/.env.db
-  #   ports:
-  #     - 5432:5432
 
-  # Django 컨테이너
   backend:
     build:
       context: ./backend
@@ -21,16 +11,13 @@ services:
       - 5001:5000
     volumes:
       - ./Backend/:/backend/
-    # volumes:
-    #   - static_volume:/backend/staticfiles
-    #   - media_volume:/backend/mediafiles
-    #   - ./backend/:/backend/
     # expose:
     #   - 5001
     env_file:
       - ./settings/prod/.env.prod
-    # depends_on:
-    #   - db
+    depends_on:
+      - elasticsearch
+
   frontend:
     build:
       context: ./frontend
@@ -43,22 +30,136 @@ services:
       - build_folder:/frontend/build
       - ./frontend/node_modules/:/frontend/node_modules
     tty: true
-    # nginx 컨테이너(서버)
-    # nginx:
-    #   build: ./nginx
-    #   ports:
-    #     - 80:8080
-    #   volumes:
-    #     - static_volume:/backend/staticfiles
-    #     - media_volume:/backend/mediafiles
-    #     - build_folder:/var/www/frontend
-    #   depends_on:
-    #     - backend
-    #     - frontend
 
-    # 컨테이너 내려도 데이터 유지되도록 함
-    # volumes:
-    #   postgres_data: null
-  static_volume: null
-  media_volume: null
+  # nginx 컨테이너(서버)
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:8080
+    volumes:
+      # - static_volume:/backend/staticfiles
+      # - media_volume:/backend/mediafiles
+      - build_folder:/var/www/frontend
+    depends_on:
+      - backend
+      - frontend
+
+  elasticsearch:
+    build:
+      context: ELK/elasticsearch/
+      args:
+        ELK_VERSION: 7.17.0
+    volumes:
+      - ./ELK/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+      - elasticsearch:/usr/share/elasticsearch/data:z
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: changeme
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
+      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
+
+  redis:
+    image: "redis:alpine"
+    networks:
+      - app-tier
+    ports:
+      - "6379:6379"
+
+  cadvisor:
+    image: google/cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - 8081:8080
+    networks:
+      - app-tier
+    restart: always
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - ./prometheus/data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+    links:
+      - cadvisor:cadvisor
+      - alertmanager:alertmanager
+    depends_on:
+      - cadvisor
+    networks:
+      - app-tier
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    user: "472"
+    depends_on:
+      - prometheus
+    ports:
+      - 3001:3000
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    networks:
+      - app-tier
+      - grafana-tier
+    restart: always
+
+  node-exporter:
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - 9100:9100
+    restart: always
+    networks:
+      - app-tier
+    deploy:
+      mode: global
+
+  alertmanager:
+    image: prom/alertmanager
+    ports:
+      - 9093:9093
+    volumes:
+      - ./alertmanager/:/etc/alertmanager/
+    networks:
+      - app-tier
+    restart: always
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+
+# 컨테이너 내려도 데이터 유지되도록 함
+volumes:
+  #   postgres_data: null
+  # static_volume: null
+  # media_volume: null
   build_folder: null
+  elasticsearch:
