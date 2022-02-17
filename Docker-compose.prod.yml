@@ -58,8 +58,9 @@ services:
       - build_folder:/frontend/build
       - ./frontend/node_modules/:/frontend/node_modules
     tty: true
-
-  # nginx 컨테이너(서버)
+    networks:
+      app-tier:
+ # nginx 컨테이너(서버)    
   nginx:
     build: ./nginx
     ports:
@@ -69,6 +70,8 @@ services:
     depends_on:
       - backend
       - frontend
+    networks:
+      app-tier:
 
   redis:
     image: "redis:alpine"
