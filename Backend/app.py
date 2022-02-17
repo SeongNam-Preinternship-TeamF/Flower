@@ -189,7 +189,7 @@ class searchAPI(Resource):
 
                     "name": hit["_source"]["name"],
                     "imgURL": hit["_source"]["imgURL"],
-                    "id":  str(hit_id["_id"])
+                    "id": str(hit_id["_id"]) #테스트용 임시코드
                 }
             )
         return_dict = {

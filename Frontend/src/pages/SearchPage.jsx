@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import History from "../components/history.js";
 import SearchBar from "../components/search-bar.js";
 import "../css/Result.css";
-<css></css>;
+import { useParams } from "react-router-dom";
 
 function SearchPage() {
   //string은 map을 사용 할 수 없기때문에 object 형태로 변환 시키기 위해 parsing을 해줘야함

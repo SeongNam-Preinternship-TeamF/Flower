@@ -1,9 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-const HistoryContainer = styled.div`
-  padding: 18px;
-`;
 const HeaderContainer = styled.div`
   overflow: hidden;
 `;

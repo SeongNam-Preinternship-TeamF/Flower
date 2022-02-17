@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../css/Main.css";
 import axios from "axios";
 import Loading from "../components/Loading";
@@ -8,6 +8,7 @@ const Main = () => {
   const [fileUrl, setFileUrl] = useState("");
   const [filename, setFilename] = useState("");
   const [id, setId] = useState("");
+  const [isLoad, setIsLoad] = useState(false);
 
   const navigate = useNavigate();
 
@@ -23,6 +24,7 @@ const Main = () => {
   };
 
   const onSubmit = (img) => {
+    setIsLoad(true);
     const formData = new FormData();
     formData.append("upload_files", img);
     setFilename(img.name);
@@ -31,7 +33,7 @@ const Main = () => {
       .then((response) => {
         console.log(response);
         setId(response.data.id);
-        alert("이미지 로딩 완료");
+        setIsLoad(false);
       })
       .catch((error) => {
         console.log(formData);
@@ -42,15 +44,16 @@ const Main = () => {
   return (
     <div className="w-full">
       <div className="banner mx-4"></div>
-      <div className="w-72 mx-auto font-bold mt-10 mb-4 text-base text-center">
+      <div className="w-72 mx-auto font-bold mt-6 mb-2 text-base text-center">
         자신의 꽃 사진을 업로드 해주세요.
       </div>
       {fileUrl === "" ? (
         <p></p>
       ) : (
-        <img className="w-32 mx-auto mb-4" src={fileUrl} alt="previewImage" />
+        <img className="w-32 mx-auto" src={fileUrl} alt="previewImage" />
       )}
-      <div className="w-full flex justify-center">
+      {isLoad ? <Loading /> : <button></button>}
+      <div className="w-full flex justify-center mb-5">
         <div className="selectPic" onClick={handleUploadButtonClick}>
           사진 선택
         </div>
