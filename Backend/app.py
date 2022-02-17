@@ -81,11 +81,11 @@ find = Namespace('Search', description='식물 키우기를 도와주는 웹사�
 api.add_namespace(find, '/api')
 
 # post 메소드에 들어가는 내용
-img_uploaded = find.model('Todo', {  # Model 객체 생성
+img_uploaded = find.model('upload_complete', {  # Model 객체 생성
     'data': fields.String(description='사진을 업로드 받음', required=True, example="what to do")
 })
 
-img_uridb_id = find.inherit('Todo With ID', {  # todo_fields 상속 받음
+img_uridb_id = find.inherit('saved_imgID', {  # todo_fields 상속 받음
     'todo_id': fields.String(description='업로드 받은 이미지를 s3에 저장, 그 s3의 uri를 저장한 db의 id')
 })
 
@@ -105,13 +105,13 @@ def get_hit_count():
             time.sleep(0.5)
 
 
-@find.route('/', methods=['GET'])
+@app.route('/', methods=['GET'])
 # 객체를 받으며, 키로는 파라미터 변수명, 값으로는 설명을 적을 수 있습니다.
-@find.doc(params={'count': '일치하는 갯수'})
+# @find.doc(params={'count': '일치하는 갯수'})
 class Hello(Resource):
     # 객체를 받으며, 키로는 Status Code, 값으로는 설멍을 적을 수 있습니다.
-    @find.doc(responses={202: 'Success'})
-    @find.doc(responses={500: 'Failed'})    # 에러 코드는 delete의 값  get에 맞는 걸로 바꿔야함
+    # @find.doc(responses={202: 'Success'})
+    # @find.doc(responses={500: 'Failed'})    # 에러 코드는 delete의 값  get에 맞는 걸로 바꿔야함
     @common_counter
     def get(self):
         """"이 api는 어떤건지 잘 모르겠습니다"""
@@ -291,7 +291,7 @@ class uploadFile(Resource):
 
 
 @find.route('/v1/search/details', methods=["GET"])
-@find.doc(params={'upload_files': '사진 파일'})
+@find.doc(params={'id': '꽃의 데이터가 저장된 db의 id'})
 class respone_data(Resource):
     @find.doc(responses={202: 'Success'})
     @find.doc(responses={500: 'Failed'})
