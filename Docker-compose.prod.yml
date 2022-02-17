@@ -1,7 +1,33 @@
 #배포용, for production
 version: "3"
 
+networks:
+  app-tier:
+    driver: bridge
+  grafana-tier:
+    driver: bridge
+
 services:
+
+  elasticsearch:
+    build:
+      context: ELK/elasticsearch/
+      args:
+        ELK_VERSION: 7.17.0
+    volumes:
+      - ./ELK/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+      - elasticsearch:/usr/share/elasticsearch/data:z
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: changeme
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
+      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
+    networks:
+      - app-tier
 
   backend:
     build:
@@ -17,6 +43,8 @@ services:
       - ./settings/prod/.env.prod
     depends_on:
       - elasticsearch
+    networks:
+      - app-tier
 
   frontend:
     build:
@@ -37,30 +65,10 @@ services:
     ports:
       - 80:8080
     volumes:
-      # - static_volume:/backend/staticfiles
-      # - media_volume:/backend/mediafiles
       - build_folder:/var/www/frontend
     depends_on:
       - backend
       - frontend
-
-  elasticsearch:
-    build:
-      context: ELK/elasticsearch/
-      args:
-        ELK_VERSION: 7.17.0
-    volumes:
-      - ./ELK/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
-      - elasticsearch:/usr/share/elasticsearch/data:z
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-      ELASTIC_PASSWORD: changeme
-      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
-      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
-      discovery.type: single-node
 
   redis:
     image: "redis:alpine"
@@ -158,8 +166,5 @@ services:
 
 # 컨테이너 내려도 데이터 유지되도록 함
 volumes:
-  #   postgres_data: null
-  # static_volume: null
-  # media_volume: null
   build_folder: null
   elasticsearch:
